@@ -587,6 +587,21 @@
         var portfolioData = {
             'Web': [
                 {
+                    title: 'Herta\'s Infinite Kuru',
+                    description: '\"Herta\'s Infinite Kuru\" adalah sebuah aplikasi web interaktif sederhana<br>yang didesain sebagai penghormatan kepada karakter Herta dari<br>Honkai: Star Rail.', // Deskripsi diubah menjadi 3 baris
+                    image: 'https://github.com/adityakelvian/Galeri-2/blob/main/hsr-gem.png?raw=true',
+                    technologies: [
+                        { name: 'HTML', img: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg' },
+                        { name: 'Tailwind CSS', img: 'https://raw.githubusercontent.com/adityakelvian/galeri/main/Tailwind_CSS_Logo.svg__1_-removebg-preview%20(1).png?raw=true' },
+                        { name: 'JavaScript', img: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg' },
+                        { name: 'Tone.js', img: 'https://placehold.co/24x24/3d4d5e/c9d1d9?text=T.js' } // Placeholder for Tone.js
+                    ],
+                    links: [
+                        { icon: 'fas fa-code', url: 'https://github.com/adityakelvian/herta-hsr' },
+                        { icon: 'fas fa-link', url: 'https://herta-hsr.netlify.app/' }
+                    ]
+                },
+                {
                     title: 'Clone Fesbuk',
                     description: 'Aplikasi "Clone Fesbuk" ini adalah sebuah prototipe front-end dari<br>platform media sosial yang terinspirasi dari desain dan beberapa<br>fungsionalitas dasar Facebook.',
                     image: 'https://raw.githubusercontent.com/adityakelvian/galeri/main/Proto%20fb.png?raw=true',
@@ -1148,7 +1163,7 @@
             var motivationText = createElement('p', ['text-gray-300', 'text-tight-leading', 'text-md', 'mb-8', 'max-w-xl', 'mx-auto'], 'Connection is the Key to Personal and Career Success. Sometimes, Reaching Out and Taking Someone\'s Hand Is the Beginning of A Journey'); // mx-auto for centering
             centeredContentDiv.appendChild(motivationText);
 
-            var contactGrid = createElement('div', ['grid', 'grid-cols-1', 'md:grid-cols-2', 'gap-4', 'max-w-2xl', 'mx-auto']); // mx-auto for centering
+            var contactGrid = createElement('div', ['grid', 'grid-cols-1', 'md:grid-cols-2', 'gap-4', 'max-w-2xl', 'mx-auto']);
             
             contactData.forEach(item => {
                 var button = createElement('a', ['flex', 'items-center', 'justify-center', 'bg-gray-800', 'hover:bg-gray-700', 'py-3', 'px-4', 'rounded-lg', 'transition', 'duration-300', 'space-x-3', 'contact-button'], `<i class="${item.icon} text-xl"></i> <span>${item.text}</span>`);
