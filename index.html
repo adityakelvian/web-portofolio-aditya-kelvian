@@ -150,7 +150,7 @@
             line-height: 1.4; /* Mengurangi kerenggangan baris untuk item daftar */
         }
 
-        /* Gaya untuk tab skill dan portofolio */
+        /* Gaya untuk tab skill dan project */
         .tab-button {
             padding: 0.5rem 1rem;
             border-bottom: 2px solid transparent;
@@ -190,7 +190,7 @@
             background-color: #e0e0e0;
         }
 
-        /* Gaya untuk kartu portofolio */
+        /* Gaya untuk kartu project */
         .portfolio-card {
             background-color: #1a1a1a; /* Latar belakang kartu */
             border-radius: 0.75rem; /* rounded-xl */
@@ -213,7 +213,7 @@
             height: 200px; /* Tinggi gambar tetap */
             object-fit: cover;
         }
-        /* Gaya untuk membatasi deskripsi portofolio menjadi 3 baris */
+        /* Gaya untuk membatasi deskripsi project menjadi 3 baris */
         .portfolio-card .description {
             display: -webkit-box;
             -webkit-line-clamp: 3;
@@ -434,9 +434,46 @@
         header {
             background-color: #000000; /* Default dark theme for header */
             transition: background-color 0.3s ease;
+            position: fixed; /* Membuat header tetap */
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000; /* Memastikan header berada di atas konten lain */
         }
         body.light-theme header {
             background-color: #ffffff; /* Light theme for header */
+        }
+
+        /* Gaya untuk tombol Scroll to Top */
+        #scroll-to-top-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #3498db; /* Biru */
+            color: white;
+            border: none;
+            border-radius: 50%; /* Membuat tombol bulat */
+            width: 50px;
+            height: 50px;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0; /* Sembunyikan secara default */
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+            z-index: 1000; /* Pastikan di atas konten lain */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Tambahkan sedikit bayangan */
+        }
+
+        #scroll-to-top-btn.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        #scroll-to-top-btn:hover {
+            background-color: #2980b9; /* Warna biru lebih gelap saat hover */
         }
     </style>
 </head>
@@ -453,16 +490,16 @@
 
         <!-- Menu Navigasi Utama -->
         <nav id="main-nav">
-            <a href="#about-section" class="nav-link-item font-medium rounded-lg px-3 py-2 transition duration-300">About</a>
-            <a href="#skills-section" class="nav-link-item font-medium rounded-lg px-3 py-2 transition duration-300">Skill</a>
-            <a href="#portfolio-section" class="nav-link-item font-medium rounded-lg px-3 py-2 transition duration-300">Portofolio</a>
-            <a href="#certification-section" class="nav-link-item font-medium rounded-lg px-3 py-2 transition duration-300">Certification</a>
-            <a href="#gallery-section" class="nav-link-item font-medium rounded-lg px-3 py-2 transition duration-300">Gallery</a>
-            <a href="#contact-section" class="nav-link-item font-medium rounded-lg px-3 py-2 transition duration-300">Contact</a>
+            <a href="#about-section" class="nav-link-item font-medium rounded-lg px-3 py-2 transition duration-300" data-translate="about">About</a>
+            <a href="#skills-section" class="nav-link-item font-medium rounded-lg px-3 py-2 transition duration-300" data-translate="skill">Skill</a>
+            <a href="#portfolio-section" class="nav-link-item font-medium rounded-lg px-3 py-2 transition duration-300" data-translate="portfolio">Portofolio</a>
+            <a href="#certification-section" class="nav-link-item font-medium rounded-lg px-3 py-2 transition duration-300" data-translate="certification">Certification</a>
+            <a href="#gallery-section" class="nav-link-item font-medium rounded-lg px-3 py-2 transition duration-300" data-translate="gallery">Gallery</a>
+            <a href="#contact-section" class="nav-link-item font-medium rounded-lg px-3 py-2 transition duration-300" data-translate="contact">Contact</a>
             <!-- Tombol Download CV dipindahkan di sini -->
             <a href="https://drive.google.com/file/d/1imbwAeKMje4RZAygAFm2I4P3gUeZ0HjC/view?usp=drive_link" target="_blank" class="download-cv-button ml-3">
                 <i class="fas fa-download"></i>
-                <span>MyCV</span>
+                <span data-translate="myCV">MyCV</span>
             </a>
         </nav>
 
@@ -470,6 +507,10 @@
             <!-- Tombol Pengubah Tema -->
             <button id="theme-toggle" class="text-white hover:text-blue-400 transition duration-300 focus:outline-none">
                 <i class="fas fa-sun text-xl"></i> <!-- Ikon awal: matahari (mode terang) -->
+            </button>
+            <!-- Tombol Pengubah Bahasa -->
+            <button id="language-toggle" class="text-white hover:text-blue-400 transition duration-300 focus:outline-none font-bold text-sm px-2 py-1 rounded border border-gray-400">
+                ID
             </button>
         </div>
     </header>
@@ -479,7 +520,7 @@
 
     <!-- Footer -->
     <footer class="text-center py-6 px-4 mt-12 border-t-2 border-blue-500 text-gray-400 text-sm">
-        <p class="flex items-center justify-center">
+        <p class="flex items-center justify-center" data-translate="footerText">
             Build &lt;/&gt; with <span class="text-red-500 mx-2 text-xl">&hearts;</span> by Aditya Kelvian Yunianto. &copy;2025
         </p>
     </footer>
@@ -499,6 +540,178 @@
     </div>
 
     <script>
+        // Objek terjemahan
+        var translations = {
+            id: {
+                // Header
+                about: 'Tentang',
+                skill: 'Kemampuan',
+                portfolio: 'Project',
+                certification: 'Sertifikat',
+                gallery: 'Galeri',
+                contact: 'Kontak',
+                myCV: 'CV-Ku',
+                // Hero Section
+                profileAlt: 'Gambar Profil Aditya Kelvian Yunianto',
+                heroName: 'Aditya Kelvian Yunianto',
+                heroTitle: 'Frontend Engineer | Backend Engineer | Designer Grafis',
+                // About Section
+                aboutSectionTitle: 'Tentang',
+                aboutSectionText: 'Lulusan S1 dari Universitas Semarang. Berpengalaman dalam bidang front-end web developer seperti menggunakan React.js, Next.js, TailwindCSS, PHP, dan Laravel dan desain grafis seperti Adobe photoshop, Corel draw, serta paham sedikit tentang Adobe illustrator, didukung oleh keahlian operasional saat bekerja menjadi pramusaji dan staf gudang. Pengalaman magang di kantor kecamatan juga membekali saya untuk dapat berinteraksi dengan masyarakat, dan memastikan informasi tersampaikan dengan jelas serta mudah dipahami.',
+                // Work Experience Section
+                workExperienceSectionTitle: 'Pengalaman Kerja',
+                workExp1Company: 'OTI Fried Chickend',
+                workExp1Role: 'Pramusaji',
+                workExp1Period: 'Novomber 2024 - April 2025',
+                workExp1Desc1: 'Membersihkan dan menyiapkan semua peralatan makan dan minum, lalu meletakannya sesuai dengan tempatnya.',
+                workExp1Desc2: 'Menangani pembayaran.',
+                workExp1Desc3: 'Membuat laporan dan catatan kinerja pada hari tersebut.',
+                workExp2Company: 'PT Jati Luhur Agung',
+                workExp2Role: 'pengembang antarmuka pengguna (UI)',
+                workExp2Period: 'Maret 2024 - Juli 2024',
+                workExp2Desc1: 'Merancang tampilan visual dan tata letak website.',
+                workExp2Desc2: 'Merancang, mengembangkan, dan memelihara UI agar responsif dan adaptif untuk smartphone, tablet, dan desktop.',
+                workExp2Desc3: 'Bekerja sama dengan devisi backend untuk memastikan agar terintegrasi dengan baik antara sistem front-end dan back-end.',
+                workExp3Company: 'Kantor Kecamatan Rembang',
+                workExp3Role: 'Seksi Pelayanan Umum',
+                workExp3Period: 'November 2023 - Januari 2024',
+                workExp3Desc1: 'Membangun dan memelihara arsitektur server-side.',
+                workExp3Desc2: 'Mengembangkan dan mengelola database.',
+                workExp3Desc3: 'Menerapkan fitur baru dan mengoptimalkan kinerja aplikasi.',
+                workExp4Company: 'Sinar Jaya Houseware',
+                workExp4Role: 'Staff Gudang',
+                workExp4Period: 'Juli 2023 - September 2023',
+                workExp4Desc1: 'Melakukan pencatatan barang masuk dan keluar, serta memperbarui data stok.',
+                workExp4Desc2: 'Melakukan bongkar muat barang dari atau ke truk atau kontainer.',
+                workExp4Desc3: 'Berkomunikasi dan berkoordinasi dengan bagian lain seperti bagian pembelian, penjualan, atau logistik terkait ketersediaan barang, pengiriman, atau masalah lainnya.',
+                workExp5Company: 'Salwa Digital Printing',
+                workExp5Role: 'Designer Grafis',
+                workExp5Period: 'Jan 2019 - Des 2019',
+                workExp5Desc1: 'Membuat desain grafis untuk berbagai macam produk.',
+                workExp5Desc2: 'Melakukan revisi desain berdasarkan feedback dari pelanggan.',
+                workExp5Desc3: 'Melakukan proses finishing seperti pemotongan, pelipatan, penjilidan, laminasi, dan packaging.',
+                showDescription: 'Tampilkan Deskripsi',
+                hideDescription: 'Sembunyikan Deskripsi',
+                // Education Section
+                educationSectionTitle: 'Pendidikan',
+                educationUniversity: 'Universitas Semarang',
+                educationMajor: 'Sistem Informasi',
+                educationPeriod: 'Maret 2020 - Agustus 2024',
+                // Skills Section
+                skillsSectionTitle: 'Skills',
+                skillCategoryLanguage: 'Language',
+                skillCategoryFramework: 'Framework & Library',
+                skillCategoryTools: 'Tools',
+                skillCategoryDBMS: 'DBMS, ORM & COM',
+                skillCategoryGraphicDesign: 'Desain Grafis',
+                // Portfolio Section
+                portfolioSectionTitle: 'Project',
+                portfolioCategoryWeb: 'Web',
+                portfolioCategoryGraphicDesign: 'Desain Grafis',
+                // Certification Section
+                certificationSectionTitle: 'Sertifikasi',
+                // Gallery Section
+                gallerySectionTitle: 'Galeri',
+                // Contact Section
+                contactSectionTitle: 'Kontak',
+                letsConnect: "Mari Terhubung",
+                motivationText: 'Koneksi adalah Kunci menuju Kesuksesan Pribadi dan Karier. Terkadang, Menjangkau dan Menggandeng Tangan Seseorang adalah Awal dari Sebuah Perjalanan',
+                // Footer
+                footerText: 'Dibuat </> dengan ❤️ oleh Aditya Kelvian Yunianto. ©2025',
+                // Modal
+                imageNotAvailable: 'Gambar Tidak Tersedia',
+                techIconFallback: 'Ikon teknologi (fallback)',
+                modalCertificationTitle: 'Sertifikat',
+                // General
+                scrollToTop: 'Gulir ke Atas',
+            },
+            en: {
+                // Header
+                about: 'About',
+                skill: 'Skills',
+                portfolio: 'Project',
+                certification: 'Certification',
+                gallery: 'Gallery',
+                contact: 'Contact',
+                myCV: 'MyCV',
+                // Hero Section
+                profileAlt: 'Aditya Kelvian Yunianto Profile Picture',
+                heroName: 'Aditya Kelvian Yunianto',
+                heroTitle: 'Frontend Engineer | Backend Engineer | Graphic Designer',
+                // About Section
+                aboutSectionTitle: 'About',
+                aboutSectionText: 'A graduate of Semarang University with a Bachelor\'s degree. Experienced in front-end web development using technologies like React.js, Next.js, TailwindCSS, PHP, and Laravel. Proficient in graphic design tools such as Adobe Photoshop, CorelDRAW, and some knowledge of Adobe Illustrator. Supported by operational skills gained from working as a waiter and warehouse staff. Internship experience at the sub-district office also equipped me with skills to interact with the community and ensure information is conveyed clearly and easily understood.',
+                // Work Experience Section
+                workExperienceSectionTitle: 'Work Experience',
+                workExp1Company: 'OTI Fried Chickend',
+                workExp1Role: 'Waiter',
+                workExp1Period: 'November 2024 - April 2025',
+                workExp1Desc1: 'Clean and prepare all eating and drinking utensils, then place them in their proper places.',
+                workExp1Desc2: 'Handle payments.',
+                workExp1Desc3: 'Make reports and performance notes for the day.',
+                workExp2Company: 'PT Jati Luhur Agung',
+                workExp2Role: 'Front-end Engineer',
+                workExp2Period: 'March 2024 - July 2024',
+                workExp2Desc1: 'Design the visual appearance and layout of the website.',
+                workExp2Desc2: 'Design, develop, and maintain responsive and adaptive UI for smartphones, tablets, and desktops.',
+                workExp2Desc3: 'Collaborate with the backend division to ensure proper integration between front-end and back-end systems.',
+                workExp3Company: 'Rembang Sub-district Office',
+                workExp3Role: 'Public Service Section',
+                workExp3Period: 'November 2023 - January 2024',
+                workExp3Desc1: 'Build and maintain server-side architecture.',
+                workExp3Desc2: 'Develop and manage databases.',
+                workExp3Desc3: 'Implement new features and optimize application performance.',
+                workExp4Company: 'Sinar Jaya Houseware',
+                workExp4Role: 'Warehouse Staff',
+                workExp4Period: 'July 2023 - September 2023',
+                workExp4Desc1: 'Record incoming and outgoing goods, and update stock data.',
+                workExp4Desc2: 'Load and unload goods from or to trucks or containers.',
+                workExp4Desc3: 'Communicate and coordinate with other departments such as purchasing, sales, or logistics regarding goods availability, shipments, or other issues.',
+                workExp5Company: 'Salwa Digital Printing',
+                workExp5Role: 'Graphic Designer',
+                workExp5Period: 'January 2019 - December 2019',
+                workExp5Desc1: 'Create graphic designs for various products.',
+                workExp5Desc2: 'Revise designs based on customer feedback.',
+                workExp5Desc3: 'Perform finishing processes such as cutting, folding, binding, lamination, and packaging.',
+                showDescription: 'Show Description',
+                hideDescription: 'Hide Description',
+                // Education Section
+                educationSectionTitle: 'Education',
+                educationUniversity: 'Semarang University',
+                educationMajor: 'Information Systems',
+                educationPeriod: 'March 2020 - August 2024',
+                // Skills Section
+                skillsSectionTitle: 'Skills',
+                skillCategoryLanguage: 'Language',
+                skillCategoryFramework: 'Framework & Library',
+                skillCategoryTools: 'Tools',
+                skillCategoryDBMS: 'DBMS, ORM & COM',
+                skillCategoryGraphicDesign: 'Graphic Design',
+                // Portfolio Section
+                portfolioSectionTitle: 'Project',
+                portfolioCategoryWeb: 'Web',
+                portfolioCategoryGraphicDesign: 'Graphic Design',
+                // Certification Section
+                certificationSectionTitle: 'Certification',
+                // Gallery Section
+                gallerySectionTitle: 'Gallery',
+                // Contact Section
+                contactSectionTitle: 'Contact',
+                letsConnect: "Let's Connect",
+                motivationText: 'Connection is the Key to Personal and Career Success. Sometimes, Reaching Out and Taking Someone\'s Hand Is the Beginning of A Journey',
+                // Footer
+                footerText: 'Build </> with ❤️ by Aditya Kelvian Yunianto. ©2025',
+                // Modal
+                imageNotAvailable: 'Image Not Available',
+                techIconFallback: 'Tech icon (fallback)',
+                modalCertificationTitle: 'Certificate',
+                // General
+                scrollToTop: 'Scroll to Top',
+            }
+        };
+
+        var currentLanguage = localStorage.getItem('language') || 'id'; // Default ke 'id'
+
         // Fungsi untuk membuat elemen dengan kelas dan konten
         var createElement = (tag, classes = [], content = '') => {
             var element = document.createElement(tag);
@@ -509,6 +722,31 @@
                 element.innerHTML = content;
             }
             return element;
+        };
+
+        // Fungsi untuk merender skill untuk kategori tertentu (dipindahkan ke global scope)
+        var displaySkills = (category, contentContainer) => {
+            if (!contentContainer) return; // Exit if contentContainer not found
+
+            contentContainer.innerHTML = ''; // Hapus skill sebelumnya
+            var skills = skillsData[category];
+            skills.forEach(skill => {
+                var skillCard = createElement('div', ['skill-icon-card']);
+                var img = createElement('img', ['w-16', 'h-16', 'mb-2'], '');
+                img.src = skill.img;
+                img.alt = skill.name + ' icon';
+                // Tambahkan penanganan error untuk gambar
+                img.onerror = function() {
+                    this.src = 'https://placehold.co/64x64/3d4d5e/c9d1d9?text=' + skill.name.charAt(0); //
+                    this.alt = translations[currentLanguage].techIconFallback;
+                };
+
+                var name = createElement('span', ['text-sm', 'text-white', 'text-center'], skill.name);
+
+                skillCard.appendChild(img);
+                skillCard.appendChild(name);
+                contentContainer.appendChild(skillCard);
+            });
         };
 
         // Data untuk bagian Skills
@@ -558,32 +796,7 @@
             ]
         };
 
-        // Fungsi untuk merender skill untuk kategori tertentu (dipindahkan ke global scope)
-        var displaySkills = (category, contentContainer) => {
-            if (!contentContainer) return; // Exit if contentContainer not found
-
-            contentContainer.innerHTML = ''; // Hapus skill sebelumnya
-            var skills = skillsData[category];
-            skills.forEach(skill => {
-                var skillCard = createElement('div', ['skill-icon-card']);
-                var img = createElement('img', ['w-16', 'h-16', 'mb-2'], '');
-                img.src = skill.img;
-                img.alt = skill.name + ' icon';
-                // Tambahkan penanganan error untuk gambar
-                img.onerror = function() {
-                    this.src = 'https://placehold.co/64x64/3d4d5e/c9d1d9?text=' + skill.name.charAt(0); // 
-                    this.alt = 'Tech icon (fallback)';
-                };
-
-                var name = createElement('span', ['text-sm', 'text-white', 'text-center'], skill.name);
-                
-                skillCard.appendChild(img);
-                skillCard.appendChild(name);
-                contentContainer.appendChild(skillCard);
-            });
-        };
-
-        // Data untuk bagian Portofolio
+        // Data untuk bagian Project
         var portfolioData = {
             'Web': [
                 {
@@ -634,7 +847,7 @@
                 {
                     title: 'Aplikasi Surat Lamaran Pekerjaan', // Judul diperbarui
                     description: 'Aplikasi web untuk membuat dan mengelola surat lamaran pekerjaan<br>secara digital, dibangun dengan HTML, CSS, JavaScript, React.js,<br>Tailwind CSS, dan Lucide Icons.',
-                    image: 'https://raw.githubusercontent.com/adityakelvian/galeri/main/Aplikasi%20slp.jpg?raw=true', 
+                    image: 'https://raw.githubusercontent.com/adityakelvian/galeri/main/Aplikasi%20slp.jpg?raw=true',
                     technologies: [
                         { name: 'HTML', img: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg' },
                         { name: 'CSS', img: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg' },
@@ -650,10 +863,10 @@
                 }
             ],
             // Menghapus seluruh kategori 'API'
-            'Desain Grafis': [ // New category for Portfolio
+            'Desain Grafis': [ // New category for Project
                 {
-                    title: 'Portofolio Desain Grafis', // Judul baru
-                    description: 'Menampilkan portofolio desain saya, menyoroti beragam proyek<br>yang mencakup desain grafis, ilustrasi, dan UI/UX.',
+                    title: 'Project Desain Grafis', // Judul baru
+                    description: 'Menampilkan project desain saya, menyoroti beragam proyek<br>yang mencakup desain grafis, ilustrasi, dan UI/UX.',
                     image: 'https://raw.githubusercontent.com/adityakelvian/galeri/main/sampul_portofolio.jpg?raw=true', // URL gambar diperbarui
                     technologies: [
                         { name: 'Adobe Illustrator', img: 'https://raw.githubusercontent.com/adityakelvian/galeri/main/Adobe_Illustrator_CC_icon.svg-removebg-preview.png?raw=true' },
@@ -668,7 +881,7 @@
             ]
         };
 
-        // Fungsi untuk merender proyek portofolio untuk kategori tertentu (dipindahkan ke global scope)
+        // Fungsi untuk merender proyek project untuk kategori tertentu (dipindahkan ke global scope)
         var displayPortfolio = (category, contentContainer) => {
             if (!contentContainer) return; // Exit if contentContainer not found
 
@@ -681,8 +894,8 @@
                 img.src = project.image;
                 img.alt = project.title;
                 img.onerror = function() {
-                    this.src = 'https://placehold.co/400x200/3d4d5e/c9d1d9?text=Gambar+Tidak+Tersedia'; // 
-                    this.alt = 'Gambar tidak tersedia';
+                    this.src = 'https://placehold.co/400x200/3d4d5e/c9d1d9?text=' + translations[currentLanguage].imageNotAvailable; //
+                    this.alt = translations[currentLanguage].imageNotAvailable;
                 };
                 card.appendChild(img);
 
@@ -690,7 +903,7 @@
                 var title = createElement('h3', ['text-xl', 'font-semibold', 'text-white', 'mb-2'], project.title);
                 // Menambahkan kelas 'description' untuk membatasi baris
                 var description = createElement('p', ['text-gray-300', 'text-sm', 'description'], project.description);
-                
+
                 textContent.appendChild(title);
                 textContent.appendChild(description);
 
@@ -700,8 +913,8 @@
                     techImg.src = tech.img;
                     techImg.alt = tech.name;
                     techImg.onerror = function() {
-                        this.src = 'https://placehold.co/24x24/3d4d5e/c9d1d9?text=T'; // 
-                        this.alt = 'Tech icon (fallback)';
+                        this.src = 'https://placehold.co/24x24/3d4d5e/c9d1d9?text=T'; //
+                        this.alt = translations[currentLanguage].techIconFallback;
                     };
                     techIconsDiv.appendChild(techImg);
                 });
@@ -729,12 +942,12 @@
             var profileDiv = createElement('div', ['relative', 'w-32', 'h-32', 'mx-auto', 'mb-6']);
             var profileImg = createElement('img', ['w-full', 'h-full', 'rounded-full', 'object-cover', 'border-4', 'border-blue-500', 'shadow-lg']);
             // Ganti URL ini dengan URL gambar profil Anda yang dapat diakses publik
-            profileImg.src = 'https://raw.githubusercontent.com/adityakelvian/galeri/main/kelvin.jpg?raw=true'; 
-            profileImg.alt = 'Gambar Profil Aditya Kelvian Yunianto';
+            profileImg.src = 'https://raw.githubusercontent.com/adityakelvian/galeri/main/kelvin.jpg?raw=true';
+            profileImg.alt = translations[currentLanguage].profileAlt;
             profileDiv.appendChild(profileImg);
 
-            var nameHeading = createElement('h1', ['text-4xl', 'md:text-5xl', 'font-bold', 'text-white', 'mb-2'], 'Aditya Kelvian Yunianto');
-            var titleParagraph = createElement('p', ['text-blue-400', 'text-lg', 'md:text-xl', 'font-medium'], 'Frontend Engineer | Backend Engineer | Designer Grafis');
+            var nameHeading = createElement('h1', ['text-4xl', 'md:text-5xl', 'font-bold', 'text-white', 'mb-2'], translations[currentLanguage].heroName);
+            var titleParagraph = createElement('p', ['text-blue-400', 'text-lg', 'md:text-xl', 'font-medium'], translations[currentLanguage].heroTitle);
 
             section.appendChild(profileDiv);
             section.appendChild(nameHeading);
@@ -747,11 +960,10 @@
         var renderAboutSection = () => {
             var section = createElement('section', ['mb-16']);
             section.id = 'about-section';
-            var heading = createElement('h2', ['text-3xl', 'font-bold', 'text-white', 'mb-6', 'border-b-2', 'border-blue-500', 'pb-3', 'inline-block'], 'About');
-            
-            var aboutText = `Lulusan S1 dari Universitas Semarang. Berpengalaman dalam bidang front-end web developer seperti menggunakan React.js, Next.js, TailwindCSS, PHP, dan Laravel dan desain grafis seperti Adobe photoshop, Corel draw, serta paham sedikit tentang Adobe illustrator, didukung oleh keahlian operasional saat bekerja menjadi pramusaji dan staf gudang. Pengalaman magang di kantor kecamatan juga membekali saya untuk dapat berinteraksi dengan masyarakat, dan memastikan informasi tersampaikan dengan jelas serta mudah dipahami.`;
-            var paragraph = createElement('p', ['text-gray-300', 'text-tight-leading', 'text-lg'], aboutText);
-            
+            var heading = createElement('h2', ['text-3xl', 'font-bold', 'text-white', 'mb-6', 'border-b-2', 'border-blue-500', 'pb-3', 'inline-block'], translations[currentLanguage].aboutSectionTitle);
+
+            var paragraph = createElement('p', ['text-gray-300', 'text-tight-leading', 'text-lg'], translations[currentLanguage].aboutSectionText);
+
             section.appendChild(heading);
             section.appendChild(paragraph);
             return section;
@@ -761,64 +973,44 @@
         var renderWorkExperienceSection = () => {
             var section = createElement('section', ['mb-16']);
             section.id = 'work-experience-section';
-            var heading = createElement('h2', ['text-3xl', 'font-bold', 'text-white', 'mb-6', 'border-b-2', 'border-blue-500', 'pb-3', 'inline-block'], 'Work Experience');
+            var heading = createElement('h2', ['text-3xl', 'font-bold', 'text-white', 'mb-6', 'border-b-2', 'border-blue-500', 'pb-3', 'inline-block'], translations[currentLanguage].workExperienceSectionTitle);
             section.appendChild(heading);
 
             var workExperiences = [
                 {
-                    company: 'OTI Fried Chickend',
-                    role: 'Pramusaji',
-                    period: 'Novomber 2024 - April 2025',
-                    icon: 'fas fa-briefcase',
-                    description: `
-                        <li>Membersihkan dan menyiapkan semua peralatan makan dan minum, lalu meletakannya sesuai dengan tempatnya.</li>
-                        <li>Menangani pembayaran.</li>
-                        <li>Membuat laporan dan catatan kinerja pada hari tersebut.</li>
-                    `
+                    companyKey: 'workExp1Company',
+                    roleKey: 'workExp1Role',
+                    periodKey: 'workExp1Period',
+                    descriptionKeys: ['workExp1Desc1', 'workExp1Desc2', 'workExp1Desc3'], // New key for descriptions
+                    icon: 'fas fa-briefcase'
                 },
                 {
-                    company: 'PT Jati Luhur Agung',
-                    role: 'Front-end Engineer',
-                    period: 'Maret 2024 - Juli 2024',
-                    icon: 'fas fa-briefcase',
-                    description: `
-                        <li>Merancang tampilan visual dan tata letak website.</li>
-                        <li>Merancang, mengembangkan, dan memelihara UI agar responsif dan adaptif untuk smartphone, tablet, dan desktop.</li>
-                        <li>Bekerja sama dengan devisi backend untuk memastikan agar terintegrasi dengan baik antara sistem front-end dan back-end.</li>
-                    `
+                    companyKey: 'workExp2Company',
+                    roleKey: 'workExp2Role',
+                    periodKey: 'workExp2Period',
+                    descriptionKeys: ['workExp2Desc1', 'workExp2Desc2', 'workExp2Desc3'], // New key for descriptions
+                    icon: 'fas fa-briefcase'
                 },
                 {
-                    company: 'Kantor Kecamatan Rembang',
-                    role: 'Seksi Pelayanan Umum',
-                    period: 'November 2023 - Januari 2024',
-                    icon: 'fas fa-briefcase',
-                    description: `
-                        <li>Membangun dan memelihara arsitektur server-side.</li>
-                        <li>Mengembangkan dan mengelola database.</li>
-                        <li>Menerapkan fitur baru dan mengoptimalkan kinerja aplikasi.</li>
-                    `
+                    companyKey: 'workExp3Company',
+                    roleKey: 'workExp3Role',
+                    periodKey: 'workExp3Period',
+                    descriptionKeys: ['workExp3Desc1', 'workExp3Desc2', 'workExp3Desc3'], // New key for descriptions
+                    icon: 'fas fa-briefcase'
                 },
                 {
-                    company: 'Sinar Jaya Houseware',
-                    role: 'Staff Gudang',
-                    period: 'Juli 2023 - September 2023',
-                    icon: 'fas fa-briefcase',
-                    description: `
-                        <li>Melakukan pencatatan barang masuk dan keluar, serta memperbarui data stok.</li>
-                        <li>Melakukan bongkar muat barang dari atau ke truk atau kontainer.</li>
-                        <li>Berkomunikasi dan berkoordinasi dengan bagian lain seperti bagian pembelian, penjualan, atau logistik terkait ketersediaan barang, pengiriman, atau masalah lainnya.</li>
-                    `
+                    companyKey: 'workExp4Company',
+                    roleKey: 'workExp4Role',
+                    periodKey: 'workExp4Period',
+                    descriptionKeys: ['workExp4Desc1', 'workExp4Desc2', 'workExp4Desc3'], // New key for descriptions
+                    icon: 'fas fa-briefcase'
                 },
                 {
-                    company: 'Salwa Digital Printing',
-                    role: 'Designer Grafis',
-                    period: 'Jan 2019 - Des 2019',
-                    icon: 'fas fa-chalkboard-teacher',
-                    description: `
-                        <li>Membuat desain grafis untuk berbagai macam produk.</li>
-                        <li>Melakukan revisi desain berdasarkan feedback dari pelanggan.</li>
-                        <li>Melakukan proses finishing seperti pemotongan, pelipatan, penjilidan, laminasi, dan packaging.</li>
-                    `
+                    companyKey: 'workExp5Company',
+                    roleKey: 'workExp5Role',
+                    periodKey: 'workExp5Period',
+                    descriptionKeys: ['workExp5Desc1', 'workExp5Desc2', 'workExp5Desc3'], // New key for descriptions
+                    icon: 'fas fa-chalkboard-teacher'
                 }
             ];
 
@@ -830,19 +1022,20 @@
                 div.appendChild(icon);
 
                 var contentDiv = createElement('div');
-                // Menghapus tautan di sini
-                var titleH3 = createElement('h3', ['text-2xl', 'font-semibold', 'text-white'], exp.company);
-                var roleP = createElement('p', ['text-gray-400', 'text-lg'], exp.role);
-                var periodP = createElement('p', ['text-gray-400', 'text-base'], exp.period);
-                
+                // Menggunakan kunci terjemahan untuk mendapatkan teks yang benar
+                var titleH3 = createElement('h3', ['text-2xl', 'font-semibold', 'text-white'], translations[currentLanguage][exp.companyKey]);
+                var roleP = createElement('p', ['text-gray-400', 'text-lg'], translations[currentLanguage][exp.roleKey]);
+                var periodP = createElement('p', ['text-gray-400', 'text-base'], translations[currentLanguage][exp.periodKey]);
+
                 contentDiv.appendChild(titleH3);
                 contentDiv.appendChild(roleP);
                 contentDiv.appendChild(periodP);
 
-                if (exp.description) {
-                    var toggleButton = createElement('button', ['text-blue-400', 'hover:text-blue-300', 'font-medium', 'mt-2', 'focus:outline-none', 'toggle-description', 'flex', 'items-center'], 'Show Description <i class="fas fa-chevron-down ml-2 text-sm transition-transform duration-300"></i>');
-                    var descriptionContent = createElement('div', ['description-content', 'mt-2', 'text-gray-300', 'leading-relaxed', 'text-base'], `<ul class="list-disc list-inside space-y-1">${exp.description}</ul>`);
-                    
+                if (exp.descriptionKeys && exp.descriptionKeys.length > 0) {
+                    var descriptionHtml = exp.descriptionKeys.map(key => `<li>${translations[currentLanguage][key]}</li>`).join('');
+                    var toggleButton = createElement('button', ['text-blue-400', 'hover:text-blue-300', 'font-medium', 'mt-2', 'focus:outline-none', 'toggle-description', 'flex', 'items-center'], translations[currentLanguage].showDescription + ` <i class="fas fa-chevron-down ml-2 text-sm transition-transform duration-300"></i>`);
+                    var descriptionContent = createElement('div', ['description-content', 'mt-2', 'text-gray-300', 'leading-relaxed', 'text-base'], `<ul class="list-disc list-inside space-y-1">${descriptionHtml}</ul>`);
+
                     contentDiv.appendChild(toggleButton);
                     contentDiv.appendChild(descriptionContent);
                 }
@@ -860,30 +1053,24 @@
             // Added mb-16 class to create space below this section
             var section = createElement('section', ['mb-16']);
             section.id = 'education-section';
-            var heading = createElement('h2', ['text-3xl', 'font-bold', 'text-white', 'mb-6', 'border-b-2', 'border-blue-500', 'pb-3', 'inline-block'], 'Education');
+            var heading = createElement('h2', ['text-3xl', 'font-bold', 'text-white', 'mb-6', 'border-b-2', 'border-blue-500', 'pb-3', 'inline-block'], translations[currentLanguage].educationSectionTitle);
             section.appendChild(heading);
 
-            var entries = [
-                {
-                    name: 'Universitas Semarang',
-                    major: 'Sistem Informasi',
-                    period: 'Maret 2020 - Agustus 2024',
-                    icon: 'fas fa-university'
-                }
-            ];
+            // Fetching education details from translations object
+            var universityName = translations[currentLanguage].educationUniversity;
+            var majorName = translations[currentLanguage].educationMajor;
+            var periodText = translations[currentLanguage].educationPeriod;
 
             var spaceYDiv = createElement('div', ['space-y-6']);
-            entries.forEach(entry => {
-                var div = createElement('div');
-                var h3 = createElement('h3', ['text-2xl', 'font-semibold', 'text-white'], entry.name);
-                var pMajor = createElement('p', ['text-gray-400', 'text-lg'], entry.major);
-                var pPeriod = createElement('p', ['text-gray-400', 'text-base'], entry.period);
-                
-                div.appendChild(h3);
-                div.appendChild(pMajor);
-                div.appendChild(pPeriod);
-                spaceYDiv.appendChild(div);
-            });
+            var div = createElement('div');
+            var h3 = createElement('h3', ['text-2xl', 'font-semibold', 'text-white'], universityName);
+            var pMajor = createElement('p', ['text-gray-400', 'text-lg'], majorName);
+            var pPeriod = createElement('p', ['text-gray-400', 'text-base'], periodText);
+
+            div.appendChild(h3);
+            div.appendChild(pMajor);
+            div.appendChild(pPeriod);
+            spaceYDiv.appendChild(div);
 
             section.appendChild(spaceYDiv);
             return section;
@@ -893,18 +1080,25 @@
         var renderSkillsSection = () => {
             var section = createElement('section', ['mb-16']);
             section.id = 'skills-section'; // Add ID for navigation
-            var heading = createElement('h2', ['text-3xl', 'font-bold', 'text-white', 'mb-6', 'border-b-2', 'border-blue-500', 'pb-3', 'inline-block'], 'Skills');
+            var heading = createElement('h2', ['text-3xl', 'font-bold', 'text-white', 'mb-6', 'border-b-2', 'border-blue-500', 'pb-3', 'inline-block'], translations[currentLanguage].skillsSectionTitle);
             section.appendChild(heading);
 
             var tabsContainer = createElement('div', ['flex', 'space-x-4', 'mb-8', 'overflow-x-auto', 'pb-2']);
             var contentContainer = document.createElement('div'); // Define contentContainer here
             contentContainer.className = 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 justify-items-center';
-            
+
             var activeTab = 'Language'; // Default active tab
 
             // Buat tombol tab
             Object.keys(skillsData).forEach(category => {
-                var button = createElement('button', ['tab-button', 'text-white', 'font-medium', 'focus:outline-none'], category);
+                var displayCategoryName = category;
+                if (currentLanguage === 'en') {
+                    if (category === 'Desain Grafis') displayCategoryName = translations.en.skillCategoryGraphicDesign;
+                    else if (category === 'Framework & Library') displayCategoryName = translations.en.skillCategoryFramework;
+                    else if (category === 'DBMS, ORM & COM') displayCategoryName = translations.en.skillCategoryDBMS;
+                    else displayCategoryName = category; // For Language, Tools
+                }
+                var button = createElement('button', ['tab-button', 'text-white', 'font-medium', 'focus:outline-none'], displayCategoryName);
                 if (category === activeTab) {
                     button.classList.add('active');
                 }
@@ -929,22 +1123,27 @@
             return section;
         };
 
-        // Fungsi untuk merender bagian Portofolio
+        // Fungsi untuk merender bagian Project
         var renderPortfolioSection = () => {
             var section = createElement('section', ['mb-16']);
             section.id = 'portfolio-section'; // Add ID for navigation
-            var heading = createElement('h2', ['text-3xl', 'font-bold', 'text-white', 'mb-6', 'border-b-2', 'border-blue-500', 'pb-3', 'inline-block'], 'Portofolio');
+            var heading = createElement('h2', ['text-3xl', 'font-bold', 'text-white', 'mb-6', 'border-b-2', 'border-blue-500', 'pb-3', 'inline-block'], translations[currentLanguage].portfolioSectionTitle);
             section.appendChild(heading);
 
             // Mengubah grid menjadi flexbox untuk scroll horizontal
             var tabsContainer = createElement('div', ['flex', 'space-x-4', 'mb-8', 'overflow-x-auto', 'pb-2']);
             var contentContainer = createElement('div', ['flex', 'overflow-x-auto', 'space-x-4', 'pb-4', 'portfolio-grid']); // Added portfolio-grid class
-            
-            var activeTab = 'Web'; // Default active tab for portfolio
+
+            var activeTab = 'Web'; // Default active tab for project
 
             // Buat tombol tab
             Object.keys(portfolioData).forEach(category => {
-                var button = createElement('button', ['tab-button', 'text-white', 'font-medium', 'focus:outline-none'], category);
+                var displayCategoryName = category;
+                if (currentLanguage === 'en') {
+                    if (category === 'Desain Grafis') displayCategoryName = translations.en.portfolioCategoryGraphicDesign;
+                    else displayCategoryName = category; // For Web
+                }
+                var button = createElement('button', ['tab-button', 'text-white', 'font-medium', 'focus:outline-none'], displayCategoryName);
                 if (category === activeTab) {
                     button.classList.add('active');
                 }
@@ -963,7 +1162,7 @@
             section.appendChild(tabsContainer);
             section.appendChild(contentContainer);
 
-            // Initial display of portfolio
+            // Initial display of project
             displayPortfolio(activeTab, contentContainer);
 
             return section;
@@ -997,8 +1196,8 @@
                 img.src = item.src;
                 img.alt = item.title;
                 img.onerror = function() {
-                    this.src = 'https://placehold.co/400x300/3d4d5e/c9d1d9?text=Gambar+Tidak+Tersedia'; // 
-                    this.alt = 'Gambar tidak tersedia';
+                    this.src = 'https://placehold.co/400x300/3d4d5e/c9d1d9?text=' + translations[currentLanguage].imageNotAvailable; //
+                    this.alt = translations[currentLanguage].imageNotAvailable;
                 };
                 mediaContentWrapper.appendChild(img);
             } else if (item.type === 'video') {
@@ -1040,13 +1239,13 @@
             var section = createElement('section', ['mb-16']);
             section.id = 'gallery-section';
             var headerContainer = createElement('div', ['flex', 'justify-between', 'items-center', 'mb-6']);
-            var heading = createElement('h2', ['text-3xl', 'font-bold', 'text-white', 'mb-6', 'border-b-2', 'border-blue-500', 'pb-3', 'inline-block'], 'Gallery');
+            var heading = createElement('h2', ['text-3xl', 'font-bold', 'text-white', 'mb-6', 'border-b-2', 'border-blue-500', 'pb-3', 'inline-block'], translations[currentLanguage].gallerySectionTitle);
             headerContainer.appendChild(heading);
             section.appendChild(headerContainer);
 
             // Mengubah grid menjadi flexbox untuk scroll horizontal
             var galleryGrid = createElement('div', ['flex', 'overflow-x-auto', 'space-x-4', 'pb-4']);
-            
+
             galleryData.forEach(item => {
                 var galleryCard = renderMediaCard(item);
                 galleryGrid.appendChild(galleryCard);
@@ -1072,7 +1271,7 @@
         var renderCertificationSection = () => {
             var section = createElement('section', ['mb-16']);
             section.id = 'certification-section';
-            
+
             // Perbaikan: Pastikan headerContainer terdefinisi dengan aman
             var headerContainer;
             try {
@@ -1083,14 +1282,14 @@
                 headerContainer = document.createElement('div');
             }
 
-            var heading = createElement('h2', ['text-3xl', 'font-bold', 'text-white', 'mb-6', 'border-b-2', 'border-blue-500', 'pb-3', 'inline-block'], 'Certification');
-            
+            var heading = createElement('h2', ['text-3xl', 'font-bold', 'text-white', 'mb-6', 'border-b-2', 'border-blue-500', 'pb-3', 'inline-block'], translations[currentLanguage].certificationSectionTitle);
+
             headerContainer.appendChild(heading);
             section.appendChild(headerContainer);
 
             // Mengubah grid menjadi flexbox untuk scroll horizontal
             var certificationGrid = createElement('div', ['flex', 'overflow-x-auto', 'space-x-4', 'pb-4']);
-            
+
             certificationData.forEach(item => {
                 var certItem = renderMediaCard(item); // Use the new renderMediaCard function
                 certItem.addEventListener('click', () => {
@@ -1144,7 +1343,7 @@
             var section = createElement('section', ['mb-16']);
             section.id = 'contact-section'; // Add ID for navigation
 
-            var heading = createElement('h2', ['text-3xl', 'font-bold', 'text-white', 'mb-6', 'border-b-2', 'border-blue-500', 'pb-3', 'inline-block'], 'Contact');
+            var heading = createElement('h2', ['text-3xl', 'font-bold', 'text-white', 'mb-6', 'border-b-2', 'border-blue-500', 'pb-3', 'inline-block'], translations[currentLanguage].contactSectionTitle);
             section.appendChild(heading);
 
             // Container for centered elements
@@ -1156,18 +1355,18 @@
             catImage.alt = 'Logo Kontak';
             catImage.onerror = function() {
                 this.src = 'https://placehold.co/128x128/3d4d5e/c9d1d9?text=Error';
-                this.alt = 'Gambar tidak tersedia';
+                this.alt = translations[currentLanguage].imageNotAvailable;
             };
             centeredContentDiv.appendChild(catImage);
 
-            var connectHeading = createElement('h3', ['text-2xl', 'font-semibold', 'text-blue-400', 'mb-2'], "Let's Connect"); // Centered by parent
+            var connectHeading = createElement('h3', ['text-2xl', 'font-semibold', 'text-blue-400', 'mb-2'], translations[currentLanguage].letsConnect); // Centered by parent
             centeredContentDiv.appendChild(connectHeading);
 
-            var motivationText = createElement('p', ['text-gray-300', 'text-tight-leading', 'text-md', 'mb-8', 'max-w-xl', 'mx-auto'], 'Connection is the Key to Personal and Career Success. Sometimes, Reaching Out and Taking Someone\'s Hand Is the Beginning of A Journey'); // mx-auto for centering
+            var motivationText = createElement('p', ['text-gray-300', 'text-tight-leading', 'text-md', 'mb-8', 'max-w-xl', 'mx-auto'], translations[currentLanguage].motivationText); // mx-auto for centering
             centeredContentDiv.appendChild(motivationText);
 
             var contactGrid = createElement('div', ['grid', 'grid-cols-1', 'md:grid-cols-2', 'gap-4', 'max-w-2xl', 'mx-auto']);
-            
+
             contactData.forEach(item => {
                 var button = createElement('a', ['flex', 'items-center', 'justify-center', 'bg-gray-800', 'hover:bg-gray-700', 'py-3', 'px-4', 'rounded-lg', 'transition', 'duration-300', 'space-x-3', 'contact-button'], `<i class="${item.icon} text-xl"></i> <span>${item.text}</span>`);
                 button.href = item.link;
@@ -1180,14 +1379,107 @@
             return section;
         };
 
+        // Fungsi untuk memperbarui semua teks yang dapat diterjemahkan pada halaman
+        var updateContentLanguage = () => {
+            // Perbarui elemen dengan atribut data-translate
+            document.querySelectorAll('[data-translate]').forEach(element => {
+                var key = element.dataset.translate;
+                if (translations[currentLanguage][key]) {
+                    // Cek jika elemen adalah tombol download CV, perbarui hanya teksnya
+                    if (element.classList.contains('download-cv-button')) {
+                        element.querySelector('span').textContent = translations[currentLanguage][key];
+                    } else {
+                        element.textContent = translations[currentLanguage][key];
+                    }
+                }
+            });
+
+            // Perbarui judul halaman
+            document.title = translations[currentLanguage].heroName + ' - ' + (currentLanguage === 'id' ? 'Profil' : 'Profile');
+
+            // Perbarui teks tombol bahasa
+            document.getElementById('language-toggle').textContent = currentLanguage.toUpperCase();
+
+            // Perbarui atribut title untuk tombol scroll ke atas
+            var scrollToTopBtn = document.getElementById('scroll-to-top-btn');
+            if (scrollToTopBtn) {
+                scrollToTopBtn.title = translations[currentLanguage].scrollToTop;
+            }
+
+            // Render ulang semua bagian konten utama untuk menerapkan terjemahan
+            var mainContent = document.getElementById('main-content');
+            mainContent.innerHTML = ''; // Bersihkan konten yang ada
+            mainContent.appendChild(renderHeroSection());
+            mainContent.appendChild(renderAboutSection());
+            mainContent.appendChild(renderWorkExperienceSection());
+            mainContent.appendChild(renderEducationSection());
+            mainContent.appendChild(renderSkillsSection());
+            mainContent.appendChild(renderPortfolioSection());
+            mainContent.appendChild(renderCertificationSection());
+            mainContent.appendChild(renderGallerySection());
+            mainContent.appendChild(renderContactSection());
+
+            // Re-apply description toggle functionality after content is rendered
+            document.querySelectorAll('.toggle-description').forEach(button => {
+                button.addEventListener('click', () => {
+                    var descriptionContent = button.nextElementSibling;
+                    descriptionContent.classList.toggle('open');
+                    if (descriptionContent.classList.contains('open')) {
+                        button.innerHTML = translations[currentLanguage].hideDescription + ` <i class="fas fa-chevron-up ml-2 text-sm transition-transform duration-300"></i>`;
+                        } else {
+                        button.innerHTML = translations[currentLanguage].showDescription + ` <i class="fas fa-chevron-down ml-2 text-sm transition-transform duration-300"></i>`;
+                    }
+                });
+            });
+
+            // Re-apply tab functionality for skills
+            document.querySelectorAll('#skills-section .tab-button').forEach(button => {
+                var category = button.dataset.category;
+                var displayCategoryName = category;
+                if (currentLanguage === 'en') {
+                    if (category === 'Desain Grafis') displayCategoryName = translations.en.skillCategoryGraphicDesign;
+                    else if (category === 'Framework & Library') displayCategoryName = translations.en.skillCategoryFramework;
+                    else if (category === 'DBMS, ORM & COM') displayCategoryName = translations.en.skillCategoryDBMS;
+                    else displayCategoryName = category;
+                }
+                button.textContent = displayCategoryName;
+            });
+            // Re-display skills for the currently active tab
+            var activeSkillTab = document.querySelector('#skills-section .tab-button.active');
+            if (activeSkillTab) {
+                displaySkills(activeSkillTab.dataset.category, document.querySelector('#skills-section .grid'));
+            } else { // If no active tab, default to 'Language'
+                displaySkills('Language', document.querySelector('#skills-section .grid'));
+            }
+
+            // Re-apply tab functionality for project
+            document.querySelectorAll('#portfolio-section .tab-button').forEach(button => {
+                var category = button.dataset.category;
+                var displayCategoryName = category;
+                if (currentLanguage === 'en') {
+                    if (category === 'Desain Grafis') displayCategoryName = translations.en.portfolioCategoryGraphicDesign;
+                    else displayCategoryName = category;
+                }
+                button.textContent = displayCategoryName;
+            });
+            // Re-display project for the currently active tab
+            var activePortfolioTab = document.querySelector('#portfolio-section .tab-button.active');
+            if (activePortfolioTab) {
+                displayPortfolio(activePortfolioTab.dataset.category, document.querySelector('#portfolio-section .portfolio-grid'));
+            } else { // If no active tab, default to 'Web'
+                displayPortfolio('Web', document.querySelector('#portfolio-section .portfolio-grid'));
+            }
+        };
+
 
         document.addEventListener('DOMContentLoaded', () => {
             var themeToggle = document.getElementById('theme-toggle');
+            var languageToggle = document.getElementById('language-toggle'); // Dapatkan tombol bahasa
             var body = document.body;
             var menuToggle = document.getElementById('menu-toggle');
             var mainNav = document.getElementById('main-nav');
             var mainContent = document.getElementById('main-content');
-            var scrollToTopBtn = document.getElementById('scroll-to-top-btn');
+            var scrollToTopBtn = document.getElementById('scroll-to-top-btn'); // Dapatkan tombol scroll to top
             var certificationModal = document.getElementById('certification-modal');
             var modalCloseBtn = document.getElementById('modal-close-btn');
 
@@ -1216,42 +1508,26 @@
                 }
             });
 
+            // Event listener untuk tombol toggle bahasa
+            languageToggle.addEventListener('click', () => {
+                currentLanguage = (currentLanguage === 'id' ? 'en' : 'id');
+                localStorage.setItem('language', currentLanguage);
+                updateContentLanguage(); // Panggil fungsi untuk memperbarui semua teks
+            });
+
             // Event listener untuk tombol toggle menu seluler
             menuToggle.addEventListener('click', () => {
                 mainNav.classList.toggle('open');
             });
 
-            // Render semua bagian ke main content
-            mainContent.appendChild(renderHeroSection());
-            mainContent.appendChild(renderAboutSection());
-            mainContent.appendChild(renderWorkExperienceSection());
-            // Hapus pemanggilan renderTrainingOrganizationSection()
-            // mainContent.appendChild(renderTrainingOrganizationSection());
-            mainContent.appendChild(renderEducationSection());
-            mainContent.appendChild(renderSkillsSection()); 
-            mainContent.appendChild(renderPortfolioSection());
-            mainContent.appendChild(renderCertificationSection());
-            mainContent.appendChild(renderGallerySection());
-            mainContent.appendChild(renderContactSection());
-
-            // Re-apply description toggle functionality after content is rendered
-            document.querySelectorAll('.toggle-description').forEach(button => {
-                button.addEventListener('click', () => {
-                    var descriptionContent = button.nextElementSibling;
-                    descriptionContent.classList.toggle('open');
-                    if (descriptionContent.classList.contains('open')) {
-                        button.innerHTML = 'Hide Description <i class="fas fa-chevron-up ml-2 text-sm transition-transform duration-300"></i>';
-                        } else {
-                        button.innerHTML = 'Show Description <i class="fas fa-chevron-down ml-2 text-sm transition-transform duration-300"></i>';
-                    }
-                });
-            });
+            // Render semua bagian ke main content saat DOM dimuat dan bahasa diatur
+            updateContentLanguage();
 
             // Smooth scrolling for navigation links
             document.querySelectorAll('nav a[href^="#"]').forEach(anchor => {
                 anchor.addEventListener('click', function (e) {
                     e.preventDefault(); // Mencegah perilaku default tautan
-                    
+
                     // Tutup menu seluler jika terbuka
                     if (mainNav.classList.contains('open')) {
                         mainNav.classList.remove('open');
@@ -1285,28 +1561,6 @@
                     behavior: 'smooth'
                 });
             });
-
-            // Handle skill tab clicks
-            document.querySelectorAll('#skills-section .tab-button').forEach(button => {
-                button.addEventListener('click', () => {
-                    document.querySelectorAll('#skills-section .tab-button').forEach(btn => btn.classList.remove('active'));
-                    button.classList.add('active');
-                    displaySkills(button.dataset.category);
-                });
-            });
-            // Initial display of skills
-            displaySkills('Language');
-
-            // Handle portfolio tab clicks
-            document.querySelectorAll('#portfolio-section .tab-button').forEach(button => {
-                button.addEventListener('click', () => {
-                    document.querySelectorAll('#portfolio-section .tab-button').forEach(btn => btn.classList.remove('active'));
-                    button.classList.add('active');
-                    displayPortfolio(button.dataset.category);
-                });
-            });
-            // Initial display of portfolio
-            displayPortfolio('Web');
 
             // Close modal when close button is clicked
             modalCloseBtn.addEventListener('click', () => {
