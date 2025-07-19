@@ -199,8 +199,7 @@
             display: flex;
             flex-direction: column;
             transition: transform 0.2s ease;
-            min-width: 220px; /* Lebar minimum disesuaikan agar lebih mirip dengan sertifikasi */
-            flex-shrink: 0; /* Prevent items from shrinking */
+            flex-shrink: 0; /* Prevent items from shrinking, enabling horizontal scroll */
         }
         .portfolio-card:hover {
             transform: translateY(-5px);
@@ -210,16 +209,11 @@
         }
         .portfolio-card img {
             width: 100%;
-            height: 200px; /* Tinggi gambar tetap */
+            height: 180px; /* Tinggi gambar disesuaikan */
             object-fit: cover;
         }
         /* Gaya untuk membatasi deskripsi project menjadi 3 baris */
         .portfolio-card .description {
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            text-overflow: ellipsis;
             line-height: 1.4; /* Sesuaikan dengan line-height teks Anda */
             margin-bottom: 1rem; /* Sesuaikan jarak bawah jika perlu */
             text-align: justify; /* Menambahkan perataan teks justified */
@@ -229,6 +223,64 @@
             height: 24px;
             margin-right: 8px;
         }
+        .portfolio-card .description .short-text,
+        .portfolio-card .description .dots,
+        .portfolio-card .description .more-text {
+            display: inline;
+        }
+        .portfolio-card .description .more-text.hidden {
+            display: none;
+        }
+        .portfolio-card .description .dots.hidden {
+            display: none;
+        }
+        .portfolio-card .description .toggle-btn {
+            background: none;
+            border: none;
+            color: #2563eb;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            padding: 0;
+            margin-left: 0.25rem;
+        }
+        .portfolio-card .description .toggle-btn:hover {
+            text-decoration: underline;
+        }
+
+        /* Kontainer untuk gulir horizontal (lebih dari 3 item) */
+        .portfolio-scroll-container {
+            display: flex;
+            overflow-x: auto;
+            space-x: 1rem; /* gap-4 */
+            padding-bottom: 1rem; /* pb-4 */
+        }
+        .portfolio-scroll-container .portfolio-card {
+            min-width: 300px; /* Lebar minimum untuk kartu saat digulir horizontal */
+            width: 300px; /* Tetapkan lebar agar konsisten saat digulir */
+        }
+
+        /* Kontainer untuk tata letak membungkus (3 item atau kurang) */
+        .portfolio-wrap-container {
+            display: grid;
+            grid-template-columns: repeat(1, minmax(0, 1fr)); /* Default 1 kolom untuk mobile */
+            gap: 1rem; /* gap-4 */
+            justify-items: center; /* Pusatkan item jika kurang dari 3 */
+        }
+        .portfolio-wrap-container .portfolio-card {
+            width: 100%; /* Lebar penuh di mobile */
+        }
+        @media (min-width: 768px) { /* md breakpoint */
+            .portfolio-wrap-container {
+                grid-template-columns: repeat(2, minmax(0, 1fr)); /* 2 kolom di tablet */
+            }
+        }
+        @media (min-width: 1024px) { /* lg breakpoint */
+            .portfolio-wrap-container {
+                grid-template-columns: repeat(3, minmax(0, 1fr)); /* 3 kolom di desktop */
+            }
+        }
+
 
         /* Gaya untuk item galeri/sertifikasi */
         .media-card {
@@ -611,6 +663,7 @@
                 modalCertificationTitle: 'Sertifikat',
                 // General
                 scrollToTop: 'Gulir ke Atas',
+                viewMore: 'Lihat Lebih Lanjut',
             },
             en: {
                 // Header
@@ -694,10 +747,16 @@
                 modalCertificationTitle: 'Certificate',
                 // General
                 scrollToTop: 'Scroll to Top',
+                viewMore: 'View More',
             }
         };
 
         var currentLanguage = localStorage.getItem('language') || 'id'; // Default ke 'id'
+
+        // State untuk melacak apakah semua item ditampilkan
+        let showAllProjects = false;
+        let showAllCertifications = false;
+        let showAllGallery = false;
 
         // Fungsi untuk membuat elemen dengan kelas dan konten
         var createElement = (tag, classes = [], content = '') => {
@@ -788,7 +847,7 @@
             'Web': [
                 {
                     title: 'Herta\'s Infinite Kuru',
-                    description: '\"Herta\'s Infinite Kuru\" adalah sebuah aplikasi web interaktif sederhana<br>yang didesain sebagai penghormatan kepada karakter Herta dari<br>Honkai: Star Rail.', // Deskripsi diubah menjadi 3 baris
+                    description: '\"Herta\'s Infinite Kuru\" adalah sebuah aplikasi web interaktif sederhana yang didesain sebagai penghormatan kepada karakter Herta dari Honkai: Star Rail.',
                     image: 'https://github.com/adityakelvian/Galeri-2/blob/main/hsr-gem.png?raw=true',
                     technologies: [
                         { name: 'HTML', img: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg' },
@@ -803,7 +862,7 @@
                 },
                 {
                     title: 'Clone Fesbuk',
-                    description: 'Aplikasi "Clone Fesbuk" ini adalah sebuah prototipe front-end dari<br>platform media sosial yang terinspirasi dari desain dan beberapa<br>fungsionalitas dasar Facebook.',
+                    description: 'Aplikasi "Clone Fesbuk" ini adalah sebuah prototipe front-end dari platform media sosial yang terinspirasi dari desain dan beberapa fungsionalitas dasar Facebook.',
                     image: 'https://raw.githubusercontent.com/adityakelvian/galeri/main/Proto%20fb.png?raw=true',
                     technologies: [
                         { name: 'HTML', img: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg' },
@@ -817,7 +876,7 @@
                 },
                 {
                     title: 'Kost Terdekat Di Universitas Semarang', // Judul diperbarui
-                    description: 'Aplikasi Sistem Informasi Geografi (SIG) Pencarian Kost<br>di Universitas Semarang membantu Anda menemukan kost terdekat<br>dengan mudah melalui peta interaktif dan filter pencarian.<br>Temukan kost berdasarkan jarak, harga, fasilitas, dan<br>lihat langsung detailnya.',
+                    description: 'Aplikasi Sistem Informasi Geografi (SIG) Pencarian Kost di Universitas Semarang membantu Anda menemukan kost terdekat dengan mudah melalui peta interaktif dan filter pencarian. Temukan kost berdasarkan jarak, harga, fasilitas, dan lihat langsung detailnya.',
                     image: 'https://raw.githubusercontent.com/adityakelvian/galeri/main/sig.jpg?raw=true', // URL gambar diperbarui
                     technologies: [
                         { name: 'PHP', img: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/php/php-original.svg' },
@@ -833,7 +892,7 @@
                 },
                 {
                     title: 'Aplikasi Surat Lamaran Pekerjaan', // Judul diperbarui
-                    description: 'Aplikasi web untuk membuat dan mengelola surat lamaran pekerjaan<br>secara digital, dibangun dengan HTML, CSS, JavaScript, React.js,<br>Tailwind CSS, dan Lucide Icons.',
+                    description: 'Aplikasi web untuk membuat dan mengelola surat lamaran pekerjaan secara digital, dibangun dengan HTML, CSS, JavaScript, React.js, Tailwind CSS, dan Lucide Icons.',
                     image: 'https://raw.githubusercontent.com/adityakelvian/galeri/main/Aplikasi%20slp.jpg?raw=true',
                     technologies: [
                         { name: 'HTML', img: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg' },
@@ -849,11 +908,10 @@
                     ]
                 }
             ],
-            // Menghapus seluruh kategori 'API'
             'Desain Grafis': [ // New category for Project
                 {
                     title: 'Project Desain Grafis', // Judul baru
-                    description: 'Menampilkan project desain saya, menyoroti beragam proyek<br>yang mencakup desain grafis, ilustrasi, dan UI/UX.',
+                    description: 'Menampilkan project desain saya, menyoroti beragam proyek yang mencakup desain grafis, ilustrasi, dan UI/UX.',
                     image: 'https://raw.githubusercontent.com/adityakelvian/galeri/main/sampul_portofolio.jpg?raw=true', // URL gambar diperbarui
                     technologies: [
                         { name: 'Adobe Illustrator', img: 'https://raw.githubusercontent.com/adityakelvian/galeri/main/Adobe_Illustrator_CC_icon.svg-removebg-preview.png?raw=true' },
@@ -874,7 +932,23 @@
 
             contentContainer.innerHTML = ''; // Hapus proyek sebelumnya
             var projects = portfolioData[category];
-            projects.forEach(project => {
+            
+            // Hapus semua kelas tata letak sebelumnya
+            contentContainer.classList.remove('portfolio-scroll-container', 'portfolio-wrap-container');
+            contentContainer.classList.remove('grid', 'grid-cols-1', 'md:grid-cols-2', 'lg:grid-cols-3', 'gap-4', 'justify-items-center');
+            contentContainer.classList.remove('flex', 'overflow-x-auto', 'space-x-4', 'pb-4');
+
+            const itemsToDisplay = showAllProjects ? projects : projects.slice(0, 3);
+
+            if (projects.length > 3 && !showAllProjects) {
+                // Terapkan kelas untuk gulir horizontal
+                contentContainer.classList.add('portfolio-scroll-container');
+            } else {
+                // Terapkan kelas untuk tata letak membungkus (grid)
+                contentContainer.classList.add('portfolio-wrap-container');
+            }
+
+            itemsToDisplay.forEach(project => {
                 var card = createElement('div', ['portfolio-card']);
 
                 var img = createElement('img', [], '');
@@ -888,11 +962,41 @@
 
                 var textContent = createElement('div', ['p-4', 'flex-grow']);
                 var title = createElement('h3', ['text-xl', 'font-semibold', 'text-white', 'mb-2'], project.title);
-                // Menambahkan kelas 'description' untuk membatasi baris
-                var description = createElement('p', ['text-gray-300', 'text-sm', 'description'], project.description);
+                
+                var descriptionP = createElement('p', ['text-gray-300', 'text-sm', 'description']);
+                const rawDescription = project.description.replace(/<br>/g, ' '); // Remove <br> for consistent truncation
+                const truncateLength = 100; // Adjust as needed
+                
+                if (rawDescription.length > truncateLength) {
+                    const shortText = rawDescription.substring(0, truncateLength);
+                    const remainingText = rawDescription.substring(truncateLength);
+
+                    const shortTextSpan = createElement('span', ['short-text'], shortText);
+                    const dotsSpan = createElement('span', ['dots'], '...');
+                    const moreTextSpan = createElement('span', ['more-text', 'hidden'], remainingText);
+                    const toggleBtn = createElement('button', ['toggle-btn'], translations[currentLanguage].viewMore);
+
+                    toggleBtn.addEventListener('click', () => {
+                        moreTextSpan.classList.toggle('hidden');
+                        dotsSpan.classList.toggle('hidden');
+                        if (moreTextSpan.classList.contains('hidden')) {
+                            toggleBtn.textContent = translations[currentLanguage].viewMore;
+                        } else {
+                            toggleBtn.textContent = translations[currentLanguage].hideDescription; // Re-using hideDescription translation
+                        }
+                    });
+
+                    descriptionP.appendChild(shortTextSpan);
+                    descriptionP.appendChild(dotsSpan);
+                    descriptionP.appendChild(moreTextSpan);
+                    descriptionP.appendChild(toggleBtn);
+
+                } else {
+                    descriptionP.innerHTML = project.description; // Use innerHTML to preserve original <br> if any
+                }
 
                 textContent.appendChild(title);
-                textContent.appendChild(description);
+                textContent.appendChild(descriptionP);
 
                 var techIconsDiv = createElement('div', ['flex', 'items-center', 'mb-4', 'tech-icons']);
                 project.technologies.forEach(tech => {
@@ -919,6 +1023,22 @@
                 card.appendChild(textContent);
                 contentContainer.appendChild(card);
             });
+
+            // Tambahkan tombol "Lihat Lebih Lanjut" jika ada lebih dari 3 proyek dan belum semua ditampilkan
+            if (projects.length > 3 && !showAllProjects) {
+                const viewMoreButtonContainer = createElement('div', ['w-full', 'text-center', 'mt-6']);
+                const viewMoreButton = createElement('button', ['bg-blue-600', 'hover:bg-blue-700', 'text-white', 'font-semibold', 'py-2', 'px-4', 'rounded-lg', 'shadow-md', 'transition-all', 'duration-300', 'ease-in-out', 'focus:outline-none', 'focus:ring-2', 'focus:ring-blue-500', 'focus:ring-opacity-75'], translations[currentLanguage].viewMore);
+                viewMoreButton.addEventListener('click', () => {
+                    showAllProjects = true;
+                    // Re-render the current category with all items
+                    const activePortfolioTab = document.querySelector('#portfolio-section .tab-button.active');
+                    if (activePortfolioTab) {
+                        displayPortfolio(activePortfolioTab.dataset.category, document.querySelector('#portfolio-section .portfolio-content-wrapper'));
+                    }
+                });
+                viewMoreButtonContainer.appendChild(viewMoreButton);
+                contentContainer.parentElement.appendChild(viewMoreButtonContainer); // Tambahkan ke parent dari contentContainer
+            }
         };
 
         // Fungsi untuk merender bagian Hero
@@ -1117,9 +1237,8 @@
             var heading = createElement('h2', ['text-3xl', 'font-bold', 'text-white', 'mb-6', 'border-b-2', 'border-blue-500', 'pb-3', 'inline-block'], translations[currentLanguage].portfolioSectionTitle);
             section.appendChild(heading);
 
-            // Mengubah grid menjadi flexbox untuk scroll horizontal
             var tabsContainer = createElement('div', ['flex', 'space-x-4', 'mb-8', 'overflow-x-auto', 'pb-2']);
-            var contentContainer = createElement('div', ['flex', 'overflow-x-auto', 'space-x-4', 'pb-4', 'portfolio-grid']); // Added portfolio-grid class
+            var portfolioContentWrapper = createElement('div', []); // Ini adalah kontainer yang akan mendapatkan kelas dinamis
 
             var activeTab = 'Web'; // Default active tab for project
 
@@ -1141,16 +1260,16 @@
                     // Tambahkan kelas aktif ke tombol yang diklik
                     button.classList.add('active');
                     activeTab = category;
-                    displayPortfolio(activeTab, contentContainer); // Pass contentContainer
+                    displayPortfolio(activeTab, portfolioContentWrapper); // Pass portfolioContentWrapper
                 });
                 tabsContainer.appendChild(button);
             });
 
             section.appendChild(tabsContainer);
-            section.appendChild(contentContainer);
+            section.appendChild(portfolioContentWrapper); // Tambahkan wrapper ke section
 
             // Initial display of project
-            displayPortfolio(activeTab, contentContainer);
+            displayPortfolio(activeTab, portfolioContentWrapper);
 
             return section;
         };
@@ -1233,11 +1352,25 @@
             // Mengubah grid menjadi flexbox untuk scroll horizontal
             var galleryGrid = createElement('div', ['flex', 'overflow-x-auto', 'space-x-4', 'pb-4']);
 
-            galleryData.forEach(item => {
+            const itemsToDisplay = showAllGallery ? galleryData : galleryData.slice(0, 3);
+
+            itemsToDisplay.forEach(item => {
                 var galleryCard = renderMediaCard(item);
                 galleryGrid.appendChild(galleryCard);
             });
             section.appendChild(galleryGrid);
+
+            // Tambahkan tombol "Lihat Lebih Lanjut" jika ada lebih dari 3 item dan belum semua ditampilkan
+            if (galleryData.length > 3 && !showAllGallery) {
+                const viewMoreButtonContainer = createElement('div', ['w-full', 'text-center', 'mt-6']);
+                const viewMoreButton = createElement('button', ['bg-blue-600', 'hover:bg-blue-700', 'text-white', 'font-semibold', 'py-2', 'px-4', 'rounded-lg', 'shadow-md', 'transition-all', 'duration-300', 'ease-in-out', 'focus:outline-none', 'focus:ring-2', 'focus:ring-blue-500', 'focus:ring-opacity-75'], translations[currentLanguage].viewMore);
+                viewMoreButton.addEventListener('click', () => {
+                    showAllGallery = true;
+                    updateContentLanguage(); // Re-render all content to update this section
+                });
+                viewMoreButtonContainer.appendChild(viewMoreButton);
+                section.appendChild(viewMoreButtonContainer);
+            }
 
             return section;
         };
@@ -1277,7 +1410,9 @@
             // Mengubah grid menjadi flexbox untuk scroll horizontal
             var certificationGrid = createElement('div', ['flex', 'overflow-x-auto', 'space-x-4', 'pb-4']);
 
-            certificationData.forEach(item => {
+            const itemsToDisplay = showAllCertifications ? certificationData : certificationData.slice(0, 3);
+
+            itemsToDisplay.forEach(item => {
                 var certItem = renderMediaCard(item); // Use the new renderMediaCard function
                 certItem.addEventListener('click', () => {
                     var modal = document.getElementById('certification-modal');
@@ -1292,6 +1427,18 @@
                 certificationGrid.appendChild(certItem);
             });
             section.appendChild(certificationGrid);
+
+            // Tambahkan tombol "Lihat Lebih Lanjut" jika ada lebih dari 3 sertifikasi dan belum semua ditampilkan
+            if (certificationData.length > 3 && !showAllCertifications) {
+                const viewMoreButtonContainer = createElement('div', ['w-full', 'text-center', 'mt-6']);
+                const viewMoreButton = createElement('button', ['bg-blue-600', 'hover:bg-blue-700', 'text-white', 'font-semibold', 'py-2', 'px-4', 'rounded-lg', 'shadow-md', 'transition-all', 'duration-300', 'ease-in-out', 'focus:outline-none', 'focus:ring-2', 'focus:ring-blue-500', 'focus:ring-opacity-75'], translations[currentLanguage].viewMore);
+                viewMoreButton.addEventListener('click', () => {
+                    showAllCertifications = true;
+                    updateContentLanguage(); // Re-render all content to update this section
+                });
+                viewMoreButtonContainer.appendChild(viewMoreButton);
+                section.appendChild(viewMoreButtonContainer);
+            }
 
             return section;
         };
@@ -1319,9 +1466,9 @@
                 link: 'https://www.instagram.com/aadityaakelviaan/'
             },
             {
-                icon: 'fab fa-behance', // Mengubah ikon dari fab fa-facebook menjadi fab fa-behance
-                text: 'Aditya Kelvian Yunianto', // Mengubah teks
-                link: 'https://www.behance.net/adityakelvian' // Mengubah link
+                icon: 'fab fa-whatsapp', // Mengubah ikon menjadi WhatsApp
+                text: 'Whatsapp', // Mengubah teks menjadi nomor WhatsApp
+                link: 'https://wa.me/6285712978343' // Mengubah link menjadi WhatsApp
             }
         ];
 
@@ -1452,9 +1599,9 @@
             // Re-display project for the currently active tab
             var activePortfolioTab = document.querySelector('#portfolio-section .tab-button.active');
             if (activePortfolioTab) {
-                displayPortfolio(activePortfolioTab.dataset.category, document.querySelector('#portfolio-section .portfolio-grid'));
+                displayPortfolio(activePortfolioTab.dataset.category, document.querySelector('#portfolio-section .portfolio-content-wrapper'));
             } else { // If no active tab, default to 'Web'
-                displayPortfolio('Web', document.querySelector('#portfolio-section .portfolio-grid'));
+                displayPortfolio('Web', document.querySelector('#portfolio-section .portfolio-content-wrapper'));
             }
         };
 
@@ -1499,6 +1646,10 @@
             languageToggle.addEventListener('click', () => {
                 currentLanguage = (currentLanguage === 'id' ? 'en' : 'id');
                 localStorage.setItem('language', currentLanguage);
+                // Reset showAll flags when language changes, so sections start collapsed
+                showAllProjects = false;
+                showAllCertifications = false;
+                showAllGallery = false;
                 updateContentLanguage(); // Panggil fungsi untuk memperbarui semua teks
             });
 
