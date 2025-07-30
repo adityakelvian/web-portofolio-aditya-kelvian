@@ -264,7 +264,7 @@
         .portfolio-wrap-container {
             display: grid;
             grid-template-columns: repeat(1, minmax(0, 1fr)); /* Default 1 kolom untuk mobile */
-            gap: 1rem; /* gap-4 */
+            gap: 1.5rem; /* gap-6, increased spacing */
             justify-items: center; /* Pusatkan item jika kurang dari 3 */
         }
         .portfolio-wrap-container .portfolio-card {
@@ -293,6 +293,7 @@
             transition: transform 0.2s ease;
             min-width: 250px; /* Set minimum width for horizontal scrolling */
             flex-shrink: 0; /* Prevent items from shrinking */
+            margin-bottom: 1.5rem; /* Added margin-bottom for vertical spacing */
         }
         .media-card:hover {
             transform: translateY(-5px);
@@ -753,11 +754,6 @@
 
         var currentLanguage = localStorage.getItem('language') || 'id'; // Default ke 'id'
 
-        // State untuk melacak apakah semua item ditampilkan
-        let showAllProjects = false;
-        let showAllCertifications = false;
-        let showAllGallery = false;
-
         // Fungsi untuk membuat elemen dengan kelas dan konten
         var createElement = (tag, classes = [], content = '') => {
             var element = document.createElement(tag);
@@ -938,16 +934,12 @@
             contentContainer.classList.remove('grid', 'grid-cols-1', 'md:grid-cols-2', 'lg:grid-cols-3', 'gap-4', 'justify-items-center');
             contentContainer.classList.remove('flex', 'overflow-x-auto', 'space-x-4', 'pb-4');
 
-            const itemsToDisplay = showAllProjects ? projects : projects.slice(0, 3);
+            // Selalu tampilkan semua item
+            const itemsToDisplay = projects;
 
-            if (projects.length > 3 && !showAllProjects) {
-                // Terapkan kelas untuk gulir horizontal
-                contentContainer.classList.add('portfolio-scroll-container');
-            } else {
-                // Terapkan kelas untuk tata letak membungkus (grid)
-                contentContainer.classList.add('portfolio-wrap-container');
-            }
-
+            // Selalu terapkan kelas untuk tata letak membungkus (grid)
+            contentContainer.classList.add('portfolio-wrap-container');
+            
             itemsToDisplay.forEach(project => {
                 var card = createElement('div', ['portfolio-card']);
 
@@ -1023,22 +1015,6 @@
                 card.appendChild(textContent);
                 contentContainer.appendChild(card);
             });
-
-            // Tambahkan tombol "Lihat Lebih Lanjut" jika ada lebih dari 3 proyek dan belum semua ditampilkan
-            if (projects.length > 3 && !showAllProjects) {
-                const viewMoreButtonContainer = createElement('div', ['w-full', 'text-center', 'mt-6']);
-                const viewMoreButton = createElement('button', ['bg-blue-600', 'hover:bg-blue-700', 'text-white', 'font-semibold', 'py-2', 'px-4', 'rounded-lg', 'shadow-md', 'transition-all', 'duration-300', 'ease-in-out', 'focus:outline-none', 'focus:ring-2', 'focus:ring-blue-500', 'focus:ring-opacity-75'], translations[currentLanguage].viewMore);
-                viewMoreButton.addEventListener('click', () => {
-                    showAllProjects = true;
-                    // Re-render the current category with all items
-                    const activePortfolioTab = document.querySelector('#portfolio-section .tab-button.active');
-                    if (activePortfolioTab) {
-                        displayPortfolio(activePortfolioTab.dataset.category, document.querySelector('#portfolio-section .portfolio-content-wrapper'));
-                    }
-                });
-                viewMoreButtonContainer.appendChild(viewMoreButton);
-                contentContainer.parentElement.appendChild(viewMoreButtonContainer); // Tambahkan ke parent dari contentContainer
-            }
         };
 
         // Fungsi untuk merender bagian Hero
@@ -1350,27 +1326,16 @@
             section.appendChild(headerContainer);
 
             // Mengubah grid menjadi flexbox untuk scroll horizontal
-            var galleryGrid = createElement('div', ['flex', 'overflow-x-auto', 'space-x-4', 'pb-4']);
+            var galleryGrid = createElement('div', ['grid', 'grid-cols-1', 'sm:grid-cols-2', 'md:grid-cols-3', 'lg:grid-cols-4', 'gap-6', 'justify-items-center']); // Changed gap-4 to gap-6
 
-            const itemsToDisplay = showAllGallery ? galleryData : galleryData.slice(0, 3);
+            // Selalu tampilkan semua item
+            const itemsToDisplay = galleryData;
 
             itemsToDisplay.forEach(item => {
                 var galleryCard = renderMediaCard(item);
                 galleryGrid.appendChild(galleryCard);
             });
             section.appendChild(galleryGrid);
-
-            // Tambahkan tombol "Lihat Lebih Lanjut" jika ada lebih dari 3 item dan belum semua ditampilkan
-            if (galleryData.length > 3 && !showAllGallery) {
-                const viewMoreButtonContainer = createElement('div', ['w-full', 'text-center', 'mt-6']);
-                const viewMoreButton = createElement('button', ['bg-blue-600', 'hover:bg-blue-700', 'text-white', 'font-semibold', 'py-2', 'px-4', 'rounded-lg', 'shadow-md', 'transition-all', 'duration-300', 'ease-in-out', 'focus:outline-none', 'focus:ring-2', 'focus:ring-blue-500', 'focus:ring-opacity-75'], translations[currentLanguage].viewMore);
-                viewMoreButton.addEventListener('click', () => {
-                    showAllGallery = true;
-                    updateContentLanguage(); // Re-render all content to update this section
-                });
-                viewMoreButtonContainer.appendChild(viewMoreButton);
-                section.appendChild(viewMoreButtonContainer);
-            }
 
             return section;
         };
@@ -1408,9 +1373,10 @@
             section.appendChild(headerContainer);
 
             // Mengubah grid menjadi flexbox untuk scroll horizontal
-            var certificationGrid = createElement('div', ['flex', 'overflow-x-auto', 'space-x-4', 'pb-4']);
+            var certificationGrid = createElement('div', ['grid', 'grid-cols-1', 'sm:grid-cols-2', 'md:grid-cols-3', 'lg:grid-cols-4', 'gap-6', 'justify-items-center']); // Changed gap-4 to gap-6
 
-            const itemsToDisplay = showAllCertifications ? certificationData : certificationData.slice(0, 3);
+            // Selalu tampilkan semua item
+            const itemsToDisplay = certificationData;
 
             itemsToDisplay.forEach(item => {
                 var certItem = renderMediaCard(item); // Use the new renderMediaCard function
@@ -1427,18 +1393,6 @@
                 certificationGrid.appendChild(certItem);
             });
             section.appendChild(certificationGrid);
-
-            // Tambahkan tombol "Lihat Lebih Lanjut" jika ada lebih dari 3 sertifikasi dan belum semua ditampilkan
-            if (certificationData.length > 3 && !showAllCertifications) {
-                const viewMoreButtonContainer = createElement('div', ['w-full', 'text-center', 'mt-6']);
-                const viewMoreButton = createElement('button', ['bg-blue-600', 'hover:bg-blue-700', 'text-white', 'font-semibold', 'py-2', 'px-4', 'rounded-lg', 'shadow-md', 'transition-all', 'duration-300', 'ease-in-out', 'focus:outline-none', 'focus:ring-2', 'focus:ring-blue-500', 'focus:ring-opacity-75'], translations[currentLanguage].viewMore);
-                viewMoreButton.addEventListener('click', () => {
-                    showAllCertifications = true;
-                    updateContentLanguage(); // Re-render all content to update this section
-                });
-                viewMoreButtonContainer.appendChild(viewMoreButton);
-                section.appendChild(viewMoreButtonContainer);
-            }
 
             return section;
         };
@@ -1647,9 +1601,9 @@
                 currentLanguage = (currentLanguage === 'id' ? 'en' : 'id');
                 localStorage.setItem('language', currentLanguage);
                 // Reset showAll flags when language changes, so sections start collapsed
-                showAllProjects = false;
-                showAllCertifications = false;
-                showAllGallery = false;
+                // showAllProjects = false; // Removed
+                // showAllCertifications = false; // Removed
+                // showAllGallery = false; // Removed
                 updateContentLanguage(); // Panggil fungsi untuk memperbarui semua teks
             });
 
