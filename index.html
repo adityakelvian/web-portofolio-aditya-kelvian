@@ -473,6 +473,17 @@
         body.light-theme header {
             background-color: #ffffff; /* Light theme for header */
         }
+        /* Menyesuaikan warna latar belakang navigasi bar di mode terang */
+        body.light-theme .bg-gray-800 {
+            background-color: #ffffff; /* Mengubah latar belakang nav bar menjadi putih di mode terang */
+        }
+        body.light-theme .text-gray-300 {
+            color: #4a5568; /* Mengubah warna teks navigasi menjadi lebih gelap di mode terang */
+        }
+        body.light-theme .text-gray-400 {
+            color: #718096; /* Mengubah warna teks sub-judul nav menjadi lebih gelap di mode terang */
+        }
+
 
         /* Gaya untuk tombol Scroll to Top */
         #scroll-to-top-btn {
@@ -561,7 +572,7 @@
     <!-- Footer -->
     <footer class="text-center py-6 px-4 mt-12 border-t-2 border-blue-500 text-gray-400 text-sm">
         <p class="flex items-center justify-center" data-translate="footerText">
-            Build &lt;/&gt; with <span class="text-red-500 mx-2 text-xl">&hearts;</span> by Aditya Kelvian Yunianto. &copy;2025
+            Build &lt;/&gt; with <span class="text-red-500 mx-2 text-xl">&hearts;</span> by Aditya Kelvian Yunianto. ©2025
         </p>
     </footer>
 
@@ -597,7 +608,7 @@
                 heroTitle: 'Frontend Engineer | Backend Engineer | Designer Grafis',
                 // About Section
                 aboutSectionTitle: 'Tentang',
-                aboutSectionText: 'Nama saya Aditya Kelvian Yunianto, panggil saja saya Kelvin! Saya seorang desainer grafis dengan minat khusus di bidang Branding, UI/UX, dan Ilustrasi. Saya senang membuat desain dengan gaya yang ceria dan dinamis. Sebagai lulusan Sistem Informasi Universitas Semarang, saya juga menguasai bahasa pemrograman seperti Python, Javascript, dan PHP. Selain itu, saya menguasai Analisis Data dan berpengalaman bekerja sebagai pelayan restoran serta terlibat dalam kegiatan kemasyarakatan. Saya ingin terus mengembangkan keterampilan saya, terutama dalam pengembangan web, sambil tetap mencintai desain.',
+                aboutSectionText: 'Nama saya Aditya Kelvian Yunianto, panggil saja saya Kelvin! Saya seorang desainer grafis dengan minat khusus di bidang Branding, UI/UX, dan Ilustrasi. Saya senang membuat desain dengan gaya yang ceria dan dinamis. Sebagai lulusan Sistem Informasi Universitas Semarang, saya juga menguasai bahasa pemrograman seperti Python, Javascript, dan PHP. Selain itu, saya menguasai Analisis Data dan berpengalaman bekerja sebagai pelayan restoran serta terlibat dalam kegiatan kemasyarakatan. Saya ingin terus mengembangkan keterampilan saya, terutama dalam pengembangan web, sambil tetap menyukai desain.',
                 // Work Experience Section
                 workExperienceSectionTitle: 'Pengalaman Kerja',
                 workExp1Company: 'OTI Fried Chickend',
@@ -743,8 +754,8 @@
                 // Footer
                 footerText: 'Build </> with ❤️ by Aditya Kelvian Yunianto. ©2025',
                 // Modal
-                imageNotAvailable: 'Image Not Available',
-                techIconFallback: 'Tech icon (fallback)',
+                imageNotAvailable: 'Gambar Tidak Tersedia',
+                techIconFallback: 'Ikon teknologi (fallback)',
                 modalCertificationTitle: 'Certificate',
                 // General
                 scrollToTop: 'Scroll to Top',
@@ -1342,14 +1353,14 @@
 
         // Data untuk bagian Certification
         var certificationData = [
-            { type: 'image', src: 'https://github.com/adityakelvian/Galeri-2/blob/main/160548_20241226_G111200036_1_BAHASA_INGGRIS.jpg?raw=true', title: 'TOEFL - Bahasa Inggris' }, // New TOEFL certification
-            { type: 'image', src: 'https://raw.githubusercontent.com/adityakelvian/Sertivicat/main/pelatihan.jpg?raw=true', title: 'Pelatihan SPSS' },
-            { type: 'image', src: 'https://raw.githubusercontent.com/adityakelvian/Sertivicat/main/oracle.jpg?raw=true', title: 'Pelatihan Oracle Academy' },
-            { type: 'image', src: 'https://github.com/adityakelvian/Galeri-2/blob/main/alison_Adobe%20Photoshop%20CS6%20Essential%20Tools.jpg?raw=true', title: 'Adobe Photoshop CS6 Essential Tools' }, // New certification
-            { type: 'image', src: 'https://github.com/adityakelvian/Galeri-2/blob/main/Node%20Js_Alison.jpg?raw=true', title: 'Beginning Node JS Using a Game Project' }, // New certification
-            { type: 'image', src: 'https://raw.githubusercontent.com/adityakelvian/Sertivicat/main/googlads.png?raw=true', title: 'Google Ads' },
-            { type: 'image', src: 'https://raw.githubusercontent.com/adityakelvian/Sertivicat/main/sdg.png?raw=true', title: 'Optimasi Pertanian dengan Teknologi Presisi' },
-            { type: 'image', src: 'https://raw.githubusercontent.com/adityakelvian/galeri/main/dvs%20adara.png?raw=true', title: 'Divisi Acara di Workshop Potret Gen Z di Era Digital' } // Gambar baru
+            { type: 'image', src: 'https://github.com/adityakelvian/Sertifikat/blob/main/Toefl.jpg?raw=true', title: 'TOEFL (Bahasa Inggris)' },
+            { type: 'image', src: 'https://github.com/adityakelvian/Sertifikat/blob/main/pelatihan.jpg?raw=true', title: 'Pelatihan SPSS' },
+            { type: 'image', src: 'https://github.com/adityakelvian/Sertifikat/blob/main/oracle.jpg?raw=true', title: 'Pelatihan Oracle Academy' },
+            { type: 'image', src: 'https://github.com/adityakelvian/Sertifikat/blob/main/alison_AdobePhotoshopCS6EssentialTools.jpg?raw=true', title: 'Adobe Photoshop CS6 Essential Tools' },
+            { type: 'image', src: 'https://github.com/adityakelvian/Sertifikat/blob/main/NodeJs_Alison.jpg?raw=true', title: 'Beginning Node JS Using a Game Project' },
+            { type: 'image', src: 'https://github.com/adityakelvian/Sertifikat/blob/main/googlad.jpeg?raw=true', title: 'Google Ads' },
+            { type: 'image', src: 'https://github.com/adityakelvian/Sertifikat/blob/main/sd.jpeg?raw=true', title: 'Optimasi Pertanian dengan Teknologi Presisi' },
+            { type: 'image', src: 'https://github.com/adityakelvian/Sertifikat/blob/main/DevisiAcar.jpeg?raw=true', title: 'Divisi Acara di Workshop Potret Gen Z di Era Digital' }
         ];
 
         // Fungsi untuk merender bagian Certification
