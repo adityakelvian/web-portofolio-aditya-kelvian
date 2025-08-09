@@ -650,6 +650,7 @@
                 educationPeriod: 'Maret 2020 - Agustus 2024',
                 // Skills Section
                 skillsSectionTitle: 'Skills',
+                skillCategoryAll: 'All',
                 skillCategoryLanguage: 'Language',
                 skillCategoryFramework: 'Framework & Library',
                 skillCategoryTools: 'Tools',
@@ -657,6 +658,7 @@
                 skillCategoryGraphicDesign: 'Desain Grafis',
                 // Portfolio Section
                 portfolioSectionTitle: 'Project',
+                portfolioCategoryAll: 'All',
                 portfolioCategoryWeb: 'Web',
                 portfolioCategoryGraphicDesign: 'Desain Grafis',
                 // Certification Section
@@ -734,6 +736,7 @@
                 educationPeriod: 'March 2020 - August 2024',
                 // Skills Section
                 skillsSectionTitle: 'Skills',
+                skillCategoryAll: 'All',
                 skillCategoryLanguage: 'Language',
                 skillCategoryFramework: 'Framework & Library',
                 skillCategoryTools: 'Tools',
@@ -741,6 +744,7 @@
                 skillCategoryGraphicDesign: 'Graphic Design',
                 // Portfolio Section
                 portfolioSectionTitle: 'Project',
+                portfolioCategoryAll: 'All',
                 portfolioCategoryWeb: 'Web',
                 portfolioCategoryGraphicDesign: 'Graphic Design',
                 // Certification Section
@@ -776,32 +780,7 @@
             }
             return element;
         };
-
-        // Fungsi untuk merender skill untuk kategori tertentu (dipindahkan ke global scope)
-        var displaySkills = (category, contentContainer) => {
-            if (!contentContainer) return; // Exit if contentContainer not found
-
-            contentContainer.innerHTML = ''; // Hapus skill sebelumnya
-            var skills = skillsData[category];
-            skills.forEach(skill => {
-                var skillCard = createElement('div', ['skill-icon-card']);
-                var img = createElement('img', ['w-16', 'h-16', 'mb-2'], '');
-                img.src = skill.img;
-                img.alt = skill.name + ' icon';
-                // Tambahkan penanganan error untuk gambar
-                img.onerror = function() {
-                    this.src = 'https://placehold.co/64x64/3d4d5e/c9d1d9?text=' + skill.name.charAt(0); //
-                    this.alt = translations[currentLanguage].techIconFallback;
-                };
-
-                var name = createElement('span', ['text-sm', 'text-white', 'text-center'], skill.name);
-
-                skillCard.appendChild(img);
-                skillCard.appendChild(name);
-                contentContainer.appendChild(skillCard);
-            });
-        };
-
+        
         // Data untuk bagian Skills
         var skillsData = {
             'Language': [
@@ -847,6 +826,34 @@
                 { name: 'Canva', img: 'https://raw.githubusercontent.com/adityakelvian/galeri/main/unnamed.png?raw=true' },
                 { name: 'Figma', img: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg' }
             ]
+        };
+
+        // Tambahkan tab 'All' yang berisi semua skills
+        skillsData['All'] = Object.values(skillsData).flat();
+
+        // Fungsi untuk merender skill untuk kategori tertentu (dipindahkan ke global scope)
+        var displaySkills = (category, contentContainer) => {
+            if (!contentContainer) return; // Exit if contentContainer not found
+
+            contentContainer.innerHTML = ''; // Hapus skill sebelumnya
+            var skills = skillsData[category];
+            skills.forEach(skill => {
+                var skillCard = createElement('div', ['skill-icon-card']);
+                var img = createElement('img', ['w-16', 'h-16', 'mb-2'], '');
+                img.src = skill.img;
+                img.alt = skill.name + ' icon';
+                // Tambahkan penanganan error untuk gambar
+                img.onerror = function() {
+                    this.src = 'https://placehold.co/64x64/3d4d5e/c9d1d9?text=' + skill.name.charAt(0); //
+                    this.alt = translations[currentLanguage].techIconFallback;
+                };
+
+                var name = createElement('span', ['text-sm', 'text-white', 'text-center'], skill.name);
+
+                skillCard.appendChild(img);
+                skillCard.appendChild(name);
+                contentContainer.appendChild(skillCard);
+            });
         };
 
         // Data untuk bagian Project
@@ -932,6 +939,10 @@
                 }
             ]
         };
+
+        // Tambahkan tab 'All' yang berisi semua proyek
+        portfolioData['All'] = [...portfolioData['Web'], ...portfolioData['Desain Grafis']];
+
 
         // Fungsi untuk merender proyek project untuk kategori tertentu (dipindahkan ke global scope)
         var displayPortfolio = (category, contentContainer) => {
@@ -1176,22 +1187,36 @@
             section.id = 'skills-section'; // Add ID for navigation
             var heading = createElement('h2', ['text-3xl', 'font-bold', 'text-white', 'mb-6', 'border-b-2', 'border-blue-500', 'pb-3', 'inline-block'], translations[currentLanguage].skillsSectionTitle);
             section.appendChild(heading);
-
-            var tabsContainer = createElement('div', ['flex', 'space-x-4', 'mb-8', 'overflow-x-auto', 'pb-2']);
-            var contentContainer = document.createElement('div'); // Define contentContainer here
+            
+            // Perubahan di sini: Menambahkan flex dan justify-center
+            var tabsContainer = createElement('div', ['flex', 'justify-center', 'space-x-4', 'mb-8', 'overflow-x-auto', 'pb-2']);
+            var contentContainer = document.createElement('div');
             contentContainer.className = 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 justify-items-center';
 
-            var activeTab = 'Language'; // Default active tab
+            var activeTab = 'All'; // Default active tab is now 'All'
+
+            // Array baru untuk menentukan urutan tab
+            var tabOrder = ['All', 'Language', 'Framework & Library', 'Tools', 'DBMS, ORM & COM', 'Desain Grafis'];
 
             // Buat tombol tab
-            Object.keys(skillsData).forEach(category => {
+            tabOrder.forEach(category => {
                 var displayCategoryName = category;
                 if (currentLanguage === 'en') {
-                    if (category === 'Desain Grafis') displayCategoryName = translations.en.skillCategoryGraphicDesign;
+                    if (category === 'All') displayCategoryName = translations.en.skillCategoryAll;
+                    else if (category === 'Language') displayCategoryName = translations.en.skillCategoryLanguage;
                     else if (category === 'Framework & Library') displayCategoryName = translations.en.skillCategoryFramework;
+                    else if (category === 'Tools') displayCategoryName = translations.en.skillCategoryTools;
                     else if (category === 'DBMS, ORM & COM') displayCategoryName = translations.en.skillCategoryDBMS;
-                    else displayCategoryName = category; // For Language, Tools
+                    else if (category === 'Desain Grafis') displayCategoryName = translations.en.skillCategoryGraphicDesign;
+                } else {
+                    if (category === 'All') displayCategoryName = translations.id.skillCategoryAll;
+                    else if (category === 'Language') displayCategoryName = translations.id.skillCategoryLanguage;
+                    else if (category === 'Framework & Library') displayCategoryName = translations.id.skillCategoryFramework;
+                    else if (category === 'Tools') displayCategoryName = translations.id.skillCategoryTools;
+                    else if (category === 'DBMS, ORM & COM') displayCategoryName = translations.id.skillCategoryDBMS;
+                    else if (category === 'Desain Grafis') displayCategoryName = translations.id.skillCategoryGraphicDesign;
                 }
+
                 var button = createElement('button', ['tab-button', 'text-white', 'font-medium', 'focus:outline-none'], displayCategoryName);
                 if (category === activeTab) {
                     button.classList.add('active');
@@ -1203,7 +1228,7 @@
                     // Tambahkan kelas aktif ke tombol yang diklik
                     button.classList.add('active');
                     activeTab = category;
-                    displaySkills(activeTab, contentContainer); // Pass contentContainer
+                    displaySkills(activeTab, contentContainer);
                 });
                 tabsContainer.appendChild(button);
             });
@@ -1224,17 +1249,26 @@
             var heading = createElement('h2', ['text-3xl', 'font-bold', 'text-white', 'mb-6', 'border-b-2', 'border-blue-500', 'pb-3', 'inline-block'], translations[currentLanguage].portfolioSectionTitle);
             section.appendChild(heading);
 
-            var tabsContainer = createElement('div', ['flex', 'space-x-4', 'mb-8', 'overflow-x-auto', 'pb-2']);
+            // Perubahan di sini: Mengatur flexbox dengan justify-center untuk memusatkan tab
+            var tabsContainer = createElement('div', ['flex', 'justify-center', 'space-x-4', 'mb-8', 'overflow-x-auto', 'pb-2']);
             var portfolioContentWrapper = createElement('div', []); // Ini adalah kontainer yang akan mendapatkan kelas dinamis
 
-            var activeTab = 'Web'; // Default active tab for project
+            var activeTab = 'All'; // Default active tab for project is now 'All'
+            
+            // Array baru untuk menentukan urutan tab
+            var tabOrder = ['All', 'Web', 'Desain Grafis'];
 
             // Buat tombol tab
-            Object.keys(portfolioData).forEach(category => {
+            tabOrder.forEach(category => {
                 var displayCategoryName = category;
                 if (currentLanguage === 'en') {
-                    if (category === 'Desain Grafis') displayCategoryName = translations.en.portfolioCategoryGraphicDesign;
+                    if (category === 'All') displayCategoryName = translations.en.portfolioCategoryAll;
+                    else if (category === 'Desain Grafis') displayCategoryName = translations.en.portfolioCategoryGraphicDesign;
                     else displayCategoryName = category; // For Web
+                } else {
+                    if (category === 'All') displayCategoryName = translations.id.portfolioCategoryAll;
+                    else if (category === 'Web') displayCategoryName = translations.id.portfolioCategoryWeb;
+                    else if (category === 'Desain Grafis') displayCategoryName = translations.id.portfolioCategoryGraphicDesign;
                 }
                 var button = createElement('button', ['tab-button', 'text-white', 'font-medium', 'focus:outline-none'], displayCategoryName);
                 if (category === activeTab) {
@@ -1523,14 +1557,24 @@
             });
 
             // Re-apply tab functionality for skills
-            document.querySelectorAll('#skills-section .tab-button').forEach(button => {
-                var category = button.dataset.category;
+            var skillTabOrder = ['All', 'Language', 'Framework & Library', 'Tools', 'DBMS, ORM & COM', 'Desain Grafis'];
+            document.querySelectorAll('#skills-section .tab-button').forEach((button, index) => {
+                var category = skillTabOrder[index];
                 var displayCategoryName = category;
                 if (currentLanguage === 'en') {
-                    if (category === 'Desain Grafis') displayCategoryName = translations.en.skillCategoryGraphicDesign;
+                    if (category === 'All') displayCategoryName = translations.en.skillCategoryAll;
+                    else if (category === 'Language') displayCategoryName = translations.en.skillCategoryLanguage;
                     else if (category === 'Framework & Library') displayCategoryName = translations.en.skillCategoryFramework;
+                    else if (category === 'Tools') displayCategoryName = translations.en.skillCategoryTools;
                     else if (category === 'DBMS, ORM & COM') displayCategoryName = translations.en.skillCategoryDBMS;
-                    else displayCategoryName = category;
+                    else if (category === 'Desain Grafis') displayCategoryName = translations.en.skillCategoryGraphicDesign;
+                } else {
+                    if (category === 'All') displayCategoryName = translations.id.skillCategoryAll;
+                    else if (category === 'Language') displayCategoryName = translations.id.skillCategoryLanguage;
+                    else if (category === 'Framework & Library') displayCategoryName = translations.id.skillCategoryFramework;
+                    else if (category === 'Tools') displayCategoryName = translations.id.skillCategoryTools;
+                    else if (category === 'DBMS, ORM & COM') displayCategoryName = translations.id.skillCategoryDBMS;
+                    else if (category === 'Desain Grafis') displayCategoryName = translations.id.skillCategoryGraphicDesign;
                 }
                 button.textContent = displayCategoryName;
             });
@@ -1538,17 +1582,23 @@
             var activeSkillTab = document.querySelector('#skills-section .tab-button.active');
             if (activeSkillTab) {
                 displaySkills(activeSkillTab.dataset.category, document.querySelector('#skills-section .grid'));
-            } else { // If no active tab, default to 'Language'
-                displaySkills('Language', document.querySelector('#skills-section .grid'));
+            } else { // If no active tab, default to 'All'
+                displaySkills('All', document.querySelector('#skills-section .grid'));
             }
 
             // Re-apply tab functionality for project
-            document.querySelectorAll('#portfolio-section .tab-button').forEach(button => {
-                var category = button.dataset.category;
+            var portfolioTabOrder = ['All', 'Web', 'Desain Grafis'];
+            document.querySelectorAll('#portfolio-section .tab-button').forEach((button, index) => {
+                var category = portfolioTabOrder[index];
                 var displayCategoryName = category;
                 if (currentLanguage === 'en') {
-                    if (category === 'Desain Grafis') displayCategoryName = translations.en.portfolioCategoryGraphicDesign;
+                    if (category === 'All') displayCategoryName = translations.en.portfolioCategoryAll;
+                    else if (category === 'Desain Grafis') displayCategoryName = translations.en.portfolioCategoryGraphicDesign;
                     else displayCategoryName = category;
+                } else {
+                    if (category === 'All') displayCategoryName = translations.id.portfolioCategoryAll;
+                    else if (category === 'Web') displayCategoryName = translations.id.portfolioCategoryWeb;
+                    else if (category === 'Desain Grafis') displayCategoryName = translations.id.portfolioCategoryGraphicDesign;
                 }
                 button.textContent = displayCategoryName;
             });
@@ -1556,8 +1606,8 @@
             var activePortfolioTab = document.querySelector('#portfolio-section .tab-button.active');
             if (activePortfolioTab) {
                 displayPortfolio(activePortfolioTab.dataset.category, document.querySelector('#portfolio-section .portfolio-content-wrapper'));
-            } else { // If no active tab, default to 'Web'
-                displayPortfolio('Web', document.querySelector('#portfolio-section .portfolio-content-wrapper'));
+            } else { // If no active tab, default to 'All'
+                displayPortfolio('All', document.querySelector('#portfolio-section .portfolio-content-wrapper'));
             }
         };
 
